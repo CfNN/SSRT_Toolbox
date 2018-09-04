@@ -108,6 +108,8 @@ classdef UserInterface < handle
         
         ShowFixation(obj, duration);
         
+        ShowBlank(obj, duration);
+        
         RunTrial(obj, StopGo, arrowDirection, trialLength, varargin)
     end
 end

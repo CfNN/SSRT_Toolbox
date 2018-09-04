@@ -16,10 +16,9 @@ assert(n_enforcedInitialGoTrials <= n_trials - n_stopTrials, 'Number of enforced
 count_StITrials = n_stopTrials/2;
 count_StITrial2s = n_stopTrials/2;
 count_GoTrials = n_trials - n_stopTrials;
-count_leftTrials = n_trials/2;
-count_rightTrials = n_trials/2;
+consecStopTrials = 0;
 
-trialCountErrorCheck(0, n_trials, count_StITrials, count_StITrial2s, count_GoTrials, count_leftTrials, count_rightTrials)
+trialCountErrorCheck(0, n_trials, count_StITrials, count_StITrial2s, count_GoTrials)
 
 trials(n_trials) = struct();
 
@@ -28,30 +27,9 @@ trials(n_trials) = struct();
 % participant gets used to the task). 
 if (n_enforcedInitialGoTrials ~= 0)
     for i = 1:n_enforcedInitialGoTrials
-        
-        % Choose left or right
-        if count_leftTrials > 0 && count_rightTrials > 0
-            rnum = rand;
-            if rnum < 0.5 && count_leftTrials > 0
-                trials = assignTrial(trials, i, 'left', 'go', NaN);
-                count_leftTrials = count_leftTrials - 1;
-            elseif rnum >= 0.5 && count_rightTrials > 0
-                trials = assignTrial(trials, i, 'right', 'go', NaN);
-                count_rightTrials = count_rightTrials - 1;
-            else
-                error('No left or right trials remaining (incorrect code or parameters?)');
-            end
-        elseif count_leftTrials == 0 && count_rightTrials > 0
-            trials = assignTrial(trials, i, 'right', 'go', NaN);
-            count_rightTrials = count_rightTrials - 1;
-        elseif count_leftTrials > 0 && count_rightTrials == 0
-            trials = assignTrial(trials, i, 'left', 'go', NaN);
-            count_leftTrials = count_leftTrials - 1;
-        else
-            error('No left or right trials remaining (incorrect code or parameters?)'); 
-        end
+        trials = assignTrial(trials, i, 'go', NaN);
         count_GoTrials = count_GoTrials - 1;
-        trialCountErrorCheck(i, n_trials, count_StITrials, count_StITrial2s, count_GoTrials, count_leftTrials, count_rightTrials);
+        trialCountErrorCheck(i, n_trials, count_StITrials, count_StITrial2s, count_GoTrials);
     end
         
     j = n_enforcedInitialGoTrials + 1;
@@ -63,17 +41,22 @@ stopTrialProbability = n_stopTrials / (n_trials - n_enforcedInitialGoTrials);
 
 for i = j:numel(trials)
     
-    rnum = rand;
+    stopTrial = rand < stopTrialProbability;
     
     if (count_StITrials == 0 && count_StITrial2s == 0)
         % No remaining stop trials, force go trial
-        rnum = 1;
+        stopTrial = false;
     elseif (count_GoTrials == 0)
         % No remaining go trials, force stop trial
-        rnum = 0;
+        stopTrial = true;
     end
     
-    if rnum < stopTrialProbability && (count_StITrials > 0 || count_StITrial2s > 0)
+    if consecStopTrials >= n_maxConsecStopTrials && count_GoTrials > 0
+        % Reached maximum number of consecutive stop trials, force go trial
+        stopTrial = false;
+    end
+    
+    if stopTrial && (count_StITrials > 0 || count_StITrial2s > 0)
         
         % Stop trial. Choose staircase number 1 or 2:
         if (count_StITrials > 0 && count_StITrial2s > 0)
@@ -86,6 +69,8 @@ for i = j:numel(trials)
             error('No more stop trials - check code for trial type counting');
         end
         
+        trials = assignTrial(trials, i, 'stop', staircaseNum);
+        
         if staircaseNum == 1
             count_StITrials = count_StITrials-1;
         elseif staircaseNum == 2
@@ -94,56 +79,37 @@ for i = j:numel(trials)
             error('Staircase number should have been set to 1 or 2');
         end
         
-        % Staircase number chosen, now choose left or right
-        if count_leftTrials > 0 && count_rightTrials > 0
-            rnum = rand;
-            if rnum < 0.5 && count_leftTrials > 0
-                trials = assignTrial(trials, i, 'left', 'stop', staircaseNum);
-                count_leftTrials = count_leftTrials - 1;
-            elseif rnum >= 0.5 && count_rightTrials > 0
-                trials = assignTrial(trials, i, 'right', 'stop', staircaseNum);
-                count_rightTrials = count_rightTrials - 1;
-            else
-                error('No left or right trials remaining (incorrect code or parameters?)');
-            end
-        elseif count_leftTrials == 0 && count_rightTrials > 0
-            trials = assignTrial(trials, i, 'right', 'stop', staircaseNum);
-            count_rightTrials = count_rightTrials - 1;
-        elseif count_leftTrials > 0 && count_rightTrials == 0
-            trials = assignTrial(trials, i, 'left', 'stop', staircaseNum);
-            count_leftTrials = count_leftTrials - 1;
-        else
-            error('No left or right trials remaining (incorrect code or parameters?)'); 
-        end
+        consecStopTrials = consecStopTrials + 1;
         
-    elseif rnum >= stopTrialProbability && (count_GoTrials > 0)
-        % Go trial. Now choose left or right
-        if count_leftTrials > 0 && count_rightTrials > 0
-            rnum = rand;
-            if rnum < 0.5 && count_leftTrials > 0
-                trials = assignTrial(trials, i, 'left', 'go', NaN);
-                count_leftTrials = count_leftTrials - 1;
-            elseif rnum >= 0.5 && count_rightTrials > 0
-                trials = assignTrial(trials, i, 'right', 'go', NaN);
-                count_rightTrials = count_rightTrials - 1;
-            else
-                error('No left or right trials remaining (incorrect code or parameters?)');
-            end
-        elseif count_leftTrials == 0 && count_rightTrials > 0
-            trials = assignTrial(trials, i, 'right', 'go', NaN);
-            count_rightTrials = count_rightTrials - 1;
-        elseif count_leftTrials > 0 && count_rightTrials == 0
-            trials = assignTrial(trials, i, 'left', 'go', NaN);
-            count_leftTrials = count_leftTrials - 1;
-        else
-            error('No left or right trials remaining (incorrect code or parameters?)'); 
-        end
+    elseif ~stopTrial && (count_GoTrials > 0)
+        % Go trial.
+        trials = assignTrial(trials, i, 'go', NaN);
         count_GoTrials = count_GoTrials - 1;
+        consecStopTrials = 0;
     else 
         error('No stop or go trials remaining (incorrect code or parameters?)');
     end
     
-    trialCountErrorCheck(i, n_trials, count_StITrials, count_StITrial2s, count_GoTrials, count_leftTrials, count_rightTrials);
+    trialCountErrorCheck(i, n_trials, count_StITrials, count_StITrial2s, count_GoTrials);
+end
+
+% Assign random left/right arrow stimuli
+dirs = {};
+[dirs{1:n_trials/2}] = deal('Left_Arrow.bmp');
+[dirs{n_trials/2+1:n_trials}] = deal('Right_Arrow.bmp');
+dirs = dirs(randperm(n_trials));
+
+for i = 1:numel(dirs)
+    trials(i).Stimulus = dirs{i};
+    if strcmpi(trials(i).Stimulus, 'Left_Arrow.bmp')
+        trials(i).CorrectAnswer = 1;
+    elseif strcmpi(trials(i).Stimulus, 'Right_Arrow.bmp')
+        trials(i).CorrectAnswer = 2;
+    end
+    
+    if strcmpi(trials(i).Procedure, 'StITrial') || strcmpi(trials(i).Procedure, 'StITrial2')
+        trials(i).CorrectAnswer = [];
+    end
 end
 clear i;
 
@@ -154,9 +120,9 @@ end
 
 % go_stop is 'go' if it's a go trial, 'stop' if it's a stop trial
 % staircaseNum should be 1 or 2;
-function trials = assignTrial(trials, i, arrowDirection, go_stop, staircaseNum)
+function trials = assignTrial(trials, i, go_stop, staircaseNum)
     
-% Preset trial attributes
+    % Preset trial attributes
     if strcmpi(go_stop, 'go')
         trials(i).Procedure = 'StGTrial';
     elseif strcmpi(go_stop, 'stop') && staircaseNum == 1
@@ -166,20 +132,10 @@ function trials = assignTrial(trials, i, arrowDirection, go_stop, staircaseNum)
     else 
         error('Invalid trial type or staircase number. Use ''go'' or ''stop'' for go_stop, 1 or 2 for staircaseNum');
     end 
-   
-    if strcmpi(arrowDirection, 'left')
-        trials(i).Stimulus = 'Left_Arrow.bmp';
-        trials(i).CorrectAnswer = 1;
-    elseif strcmpi(arrowDirection, 'right')
-        trials(i).Stimulus = 'Right_Arrow.bmp';
-        trials(i).CorrectAnswer = 2;
-    else
-        error('Invalid arrow direction, use ''left'' or ''right''');
-    end
     
-    if strcmpi(go_stop, 'stop')
-        trials(i).CorrectAnswer = [];
-    end
+    %Set to blank for now, will be set properly later in the function
+    trials(i).Stimulus = [];
+    trials(i).CorrectAnswer = [];
     
     % To be set during/after the trial - initially set to NaN (not a number)
     trials(i).Answer = NaN;
@@ -192,8 +148,7 @@ function trials = assignTrial(trials, i, arrowDirection, go_stop, staircaseNum)
     trials(i).ReactionTimestamp = NaN;
 end
 
-function trialCountErrorCheck(i, n_trials, count_StITrials, count_StITrial2s, count_GoTrials, count_leftTrials, count_rightTrials)
-    disp({i, 'count_StITrials', count_StITrials, 'count_StITrial2s', count_StITrial2s, 'count_GoTrials', count_GoTrials, 'count_leftTrials', count_leftTrials, 'count_rightTrials', count_rightTrials});
+function trialCountErrorCheck(i, n_trials, count_StITrials, count_StITrial2s, count_GoTrials)
+    disp({i, 'count_StITrials', count_StITrials, 'count_StITrial2s', count_StITrial2s, 'count_GoTrials', count_GoTrials});
     assert(count_GoTrials + count_StITrials + count_StITrial2s + i == n_trials, 'Error, check code for counting stop/go trial types');
-    assert(count_leftTrials + count_rightTrials + i == n_trials, 'Error, check code for counting left/right trial types');
 end

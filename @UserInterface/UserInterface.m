@@ -1,7 +1,11 @@
 classdef UserInterface < handle
     
     properties (GetAccess=private)
-        %Screen properties
+        % Settings (initialized once by main script, never change during
+        % experiment)
+        settings;
+        
+        % Screen properties
         window;
         windowRect;
         screenXpixels;
@@ -9,11 +13,11 @@ classdef UserInterface < handle
         xCenter;
         yCenter;
         
-        %Images
+        % Images
         arrow_tex_left;
         arrow_tex_right;
         
-        %Sound parameters
+        % Sound parameters
         snd_stopBeep;
         snd_pahandle;
         snd_repetitions;
@@ -29,7 +33,10 @@ classdef UserInterface < handle
     end
     
     methods
-        function obj = UserInterface(settings)
+        function obj = UserInterface(settings_init)
+            
+            obj.settings = settings_init;
+            
             % Call some default settings for setting up Psychtoolbox
             PsychDefaultSetup(2);
 
@@ -87,7 +94,7 @@ classdef UserInterface < handle
             PsychPortAudio('Volume', obj.snd_pahandle, 1);
 
             % Make a beep which we will play back to the user
-            obj.snd_stopBeep = MakeBeep(settings.BeepFreq, settings.g_nInhDur, snd_playbackFreq);
+            obj.snd_stopBeep = MakeBeep(obj.settings.BeepFreq, obj.settings.InhDur, snd_playbackFreq);
 
             % Fill the audio playback buffer with the audio data, doubled for stereo
             % presentation
@@ -106,10 +113,17 @@ classdef UserInterface < handle
         
         ShowInstructions(obj);
         
-        ShowFixation(obj, duration);
+        ShowFixation(obj, duration, runningVals);
         
-        ShowBlank(obj, duration);
+        ShowBlank(obj, duration, runningVals);
         
-        RunTrial(obj, StopGo, arrowDirection, trialLength, varargin)
+        RunTrial(obj, StopGo, arrowDirection, trialLength, varargin);
+        
+        [trials, runningVals] = RunNextTrial(obj, trials, runningVals);
+        
+    end
+    
+    methods (Access = private)
+        DrawPerformanceMetrics(obj, runningVals);
     end
 end

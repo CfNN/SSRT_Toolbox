@@ -1,4 +1,6 @@
 classdef UserInterface < handle
+% USERINTERFACE - Wrapper class that contains PsychToolbox functions. Main
+% script 'Main_SSRT.m' works by using functions in this class.
     
     properties (GetAccess=private)
         % Settings (initialized once by main script, never change during
@@ -39,6 +41,15 @@ classdef UserInterface < handle
             
             % Call some default settings for setting up Psychtoolbox
             PsychDefaultSetup(2);
+            
+            %---KEYBOARD SETUP---%
+            
+            % Needed for the experiment to run on different operating systems with
+            % different key code systems
+            KbName('UnifyKeyNames');
+            
+            % Enable all keyboard keys for key presses
+            RestrictKeysForKbCheck([]);
 
             %---SCREEN SETUP---%
 
@@ -109,9 +120,9 @@ classdef UserInterface < handle
             obj.arrow_tex_right = Screen('MakeTexture', obj.window, arrow_img_right);
         end
         
-        GetSessionConfig(obj);
-        
         ShowInstructions(obj);
+        
+        ShowReadyTimer(obj);
         
         ShowFixation(obj, duration, runningVals);
         

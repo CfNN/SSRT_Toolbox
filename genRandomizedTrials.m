@@ -1,4 +1,25 @@
 function genRandomizedTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_maxConsecStopTrials)
+% GENRANDOMIZEDTRIALS - Generates a pseudo-random block of trials. Trial
+% order is random with certain enforced features (see below).
+%
+% Usage: genRandomizedTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_maxConsecStopTrials); 
+%
+% n_trials: Total number of trials in the session
+%
+% n_stopTrials: Number of stop trials in session - the rest are go trials
+%
+% n_enforcedInitialGoTrials: The number of go trials at the beginning of
+% the session before any stop trials should be allowed. Set to zero if it's
+% alright for there to be stop trials right at the beginning.
+% 
+% n_maxConsecStopTrials: The maximum number of consecutive stop trials that
+% should be allowed. Set equal to n_trials if it doesn't matter if there
+% are several consecutive stop trials by chance. 
+%
+% See also GENRANDOMIZEDTRIALSSIMPLE
+% ----------------
+
+
 
 % Seed random number generator. Otherwise, same 'random' sequence of
 % numbers will be generated each time after opening MATLAB.
@@ -114,7 +135,7 @@ end
 clear i;
 
 assignin('base', 'trials', trials);
-assignin('base', 'currentTrial', 1);
+save('CURRENTTRIALS.mat');
 
 end
 
@@ -143,9 +164,11 @@ function trials = assignTrial(trials, i, go_stop, staircaseNum)
     trials(i).GoRT = NaN;
     trials(i).StopSignalDelay = NaN;
     % Timestamps
-    trials(i).GoSignalTimestamp = NaN;
-    trials(i).StopSignalTimestamp = NaN;
-    trials(i).ReactionTimestamp = NaN;
+    trials(i).GoSignalOnsetTimestamp = NaN;
+    trials(i).GoSignalOffsetTimestamp = NaN;
+    trials(i).StopSignalOnsetTimestamp = NaN;
+    trials(i).StopSignalOffsetTimestamp = NaN;
+    trials(i).ResponseTimestamp = NaN;
 end
 
 function trialCountErrorCheck(i, n_trials, count_StITrials, count_StITrial2s, count_GoTrials)

@@ -129,7 +129,7 @@ for i = 1:numel(dirs)
     end
     
     if strcmpi(trials(i).Procedure, 'StITrial') || strcmpi(trials(i).Procedure, 'StITrial2')
-        trials(i).CorrectAnswer = [];
+        trials(i).CorrectAnswer = 0;
     end
 end
 clear i;
@@ -154,13 +154,13 @@ function trials = assignTrial(trials, i, go_stop, staircaseNum)
         error('Invalid trial type or staircase number. Use ''go'' or ''stop'' for go_stop, 1 or 2 for staircaseNum');
     end 
     
-    %Set to blank for now, will be set properly later in the function
-    trials(i).Stimulus = [];
-    trials(i).CorrectAnswer = [];
+    %Set to NaN for now, will be set properly later in the function
+    trials(i).Stimulus = NaN;
+    trials(i).CorrectAnswer = NaN;
     
     % To be set during/after the trial - initially set to NaN (not a number)
     trials(i).Answer = NaN;
-    trials(i).Correct = NaN; %Boolean indicating whether Answer matches CorrectAnswer
+    trials(i).Correct = false; %Boolean indicating whether Answer matches CorrectAnswer
     trials(i).GoRT = NaN;
     trials(i).StopSignalDelay = NaN;
     % Timestamps

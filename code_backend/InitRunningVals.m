@@ -10,6 +10,11 @@ runningVals.currentTrial = 1;
 runningVals.ssd1 = settings.g_nGoDur_initial;
 runningVals.ssd2 = settings.g_nGoDur2_initial;
 
+% delta_t values for staircases 1 and 2, will decrease over the course of
+% the experiment if settings.delta_t_decay is set to less than 1
+runningVals.delta_t_1 = settings.delta_t_initial;
+runningVals.delta_t_2 = settings.delta_t_initial;
+
 % Variables for keeping track of live performance metrics. Go and Stop
 % accuracies (GoAcc, StopAcc) are initially displayed as "-1" before any
 % data is available. 

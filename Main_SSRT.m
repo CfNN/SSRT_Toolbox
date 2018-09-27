@@ -40,8 +40,10 @@ ui = UserInterface(settings);
 % Use the ui to show experiment instructions
 ui.ShowInstructions();
 
-% Use the ui to show the "ready" screen with a timer
-ui.ShowReadyTimer();
+% Use the ui to show the "ready" screen with a timer, and wait for the MRI
+% trigger (or a key press, depending on what is specified in
+% ExperimentSettings.m)
+TriggerTimestamp = ui.ShowReadyTrigger();
 
 % Use the ui to show a fixation cross for the specified amount of time in
 % seconds

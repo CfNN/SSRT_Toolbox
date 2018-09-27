@@ -41,8 +41,12 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
         % pressed)
         [ keyIsDown, keyTime, keyCode ] = KbCheck; % keyTime is from an internal call to GetSecs
         
+        % Record RT and keycode data, and break loop, if key pressed
         if (keyIsDown)
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
+            trials(runningVals.currentTrial).GoRT = keyTime - tGoStimOn;
+            runningVals.LastGoRT = keyTime - tGoStimOn; % For live performance metrics
+            trials(runningVals.currentTrial).Answer = keyMap(KbName(keyCode));
             break;
         end
         
@@ -56,14 +60,6 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
     % End the stimulus and add timestamp
     [~, goSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
     trials(runningVals.currentTrial).GoSignalOffsetTimestamp = goSignalEndTime;
-    
-    % If the subject responded with a key press, record which key they 
-    % pressed and their Go reaction time
-    if(~timedout)
-        trials(runningVals.currentTrial).GoRT = keyTime - tGoStimOn;
-        runningVals.LastGoRT = keyTime - tGoStimOn; % For live performance metrics
-        trials(runningVals.currentTrial).Answer = keyMap(KbName(keyCode));
-    end
     
     % Check if answer is correct
     if trials(runningVals.currentTrial).Answer == trials(runningVals.currentTrial).CorrectAnswer

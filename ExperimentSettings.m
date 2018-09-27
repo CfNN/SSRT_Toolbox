@@ -9,6 +9,10 @@ settings.ExperimentName = 'SSRT';
 % Set whether the stop signal is 'auditory' (beep) or 'visual' (up arrow)
 settings.StopSignalType = 'visual';
 
+% Set whether an MRI trigger will be used to start the experiment
+% (otherwise a key press will be used)
+settings.UseMRITrigger = false;
+
 % Set to "true" to display live performance metrics at the bottom of the 
 % "Blank" screen during the experiment. To hide metrics, set to "false"
 settings.DisplayPerfMetrics = true;

@@ -168,7 +168,7 @@ classdef UserInterface < handle
         
         ShowInstructions(obj);
         
-        ShowReadyTimer(obj);
+        TriggerTimestamp = ShowReadyTrigger(obj);
         
         ShowFixation(obj, duration, runningVals);
         

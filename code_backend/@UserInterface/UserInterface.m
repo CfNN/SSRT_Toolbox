@@ -18,7 +18,10 @@ classdef UserInterface < handle
         % Images
         arrow_tex_left;
         arrow_tex_right;
-        arrow_rect;
+        arrow_tex_up;
+        lr_arrow_rect;
+        up_arrow_rect;
+        
         
         % Sound parameters
         snd_stopBeep;
@@ -98,11 +101,13 @@ classdef UserInterface < handle
             % Adding a small sound latency makes the beginning of the sound
             % cleaner. If this is set to 0, sound card may attempt to
             % start playing the sound before everything is actually ready.
-            % This latency is accounted for when playing the sound in
-            % the experiment. Setting it to zero seems to work fine on at
-            % least one machine, otherwise try setting it to 0.015. Always
-            % make sure to look at the actual timing data (ie. compare
-            % SSD_intended with SSD_actual) to see how things are working. 
+            % Setting this to zero seems to work fine on at least one 
+            % machine, otherwise try setting it to 0.015. Always make sure 
+            % to look at the actual timing data (ie. compare SSD_intended 
+            % with SSD_actual) to see how things are working. 
+            % This latency is NOT accounted for when playing the sound in
+            % the experiment - although the actual time when the sound 
+            % starts playing is used to calculate SSD_actual.
             obj.snd_latency = 0;
 
             % Open Psych-Audio port, with the follow arguements
@@ -135,24 +140,28 @@ classdef UserInterface < handle
 
             arrow_img_left = double(imread('media/Left_Arrow.bmp'));
             arrow_img_right = double(imread('media/Right_Arrow.bmp'));
+            arrow_img_up = double(imread('media/Up_Arrow.bmp'));
 
             obj.arrow_tex_left = Screen('MakeTexture', obj.window, arrow_img_left);
             obj.arrow_tex_right = Screen('MakeTexture', obj.window, arrow_img_right);
+            obj.arrow_tex_up = Screen('MakeTexture', obj.window, arrow_img_up);
             
-            [s1, s2, ~] = size(arrow_img_left); % arrow_img_right is same size
+            [arrow_s1, arrow_s2, ~] = size(arrow_img_left); % arrow_img_right is same size, up arrow has aspect ratio reversed
             
             % Get the aspect ratio of the image. We need this to maintain the aspect
             % ratio of the image. Otherwise, if we don't match the aspect 
             % ratio the image will appear warped / stretched
-            aspectRatio = s2 / s1;
+            arrow_aspectRatio = arrow_s2 / arrow_s1;
             
-            arrow_height = 0.01*obj.settings.ArrowSize*obj.screenXpixels;
+            lr_arrow_height = 0.01*obj.settings.ArrowSize*obj.screenXpixels;
             
-            arrow_width = arrow_height * aspectRatio;
+            lr_arrow_width = lr_arrow_height * arrow_aspectRatio;
             
-            obj.arrow_rect = [0 0 arrow_width arrow_height];
+            obj.lr_arrow_rect = [0 0 lr_arrow_width lr_arrow_height];
+            obj.up_arrow_rect = [0 0 lr_arrow_height lr_arrow_width]; % Width/height reversed due to 90 deg rotation
             
-            obj.arrow_rect = CenterRectOnPointd(obj.arrow_rect, obj.screenXpixels / 2, obj.screenYpixels / 2);
+            obj.lr_arrow_rect = CenterRectOnPointd(obj.lr_arrow_rect, obj.screenXpixels / 2, obj.screenYpixels / 2);
+            obj.up_arrow_rect = CenterRectOnPointd(obj.up_arrow_rect, obj.screenXpixels / 2, (obj.screenYpixels / 2) - (lr_arrow_height+lr_arrow_width)/2);
         end
         
         ShowInstructions(obj);

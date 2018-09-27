@@ -30,10 +30,10 @@ settings.delta_t_initial = 0.050; % seconds
 % runningVals.delta_t_decay2 - one distinct value for each staircase. 
 % Set the value to 1 to keep delta_t constant throughout the experiment
 % session. For an experiment session with 32 stop trials and 
-% delta_t_initial, of 0.10s, a value of 0.8 seems to work well. Try running 
+% delta_t_initial, of 0.100s, a value of 0.9 seems to work well. Try running 
 % the "visualize_staircase_decay" script in the misc_tools folder to see 
 % what happens to delta_t with different starting values and decay values. 
-settings.delta_t_decay = 1;
+settings.delta_t_decay = 0.9;
 
 % Duration of stop signal beep. g_nInhDur in E-Prime version. 
 settings.StopSignalDur = 0.250; % seconds
@@ -48,7 +48,7 @@ settings.TrialDur = 1.0; % seconds
 settings.FixationDur = 0.5; % seconds
 
 % Duration of blank screen after each trial
-settings.BlankDur = 1.0; % seconds
+settings.BlankDur = 0.100; % seconds
 
 % Size of arrow graphics (arbitrary units). Make larger/smaller to change
 % size of the arrows displayed during trials. 

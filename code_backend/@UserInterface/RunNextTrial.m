@@ -9,14 +9,14 @@ function [trials, runningVals] = RunNextTrial(obj, trials, settings, runningVals
 % -------------------
 
 if strcmpi(trials(runningVals.currentTrial).Stimulus, 'Right_Arrow.bmp')
-    img = obj.arrow_tex_right;
+    go_img = obj.arrow_tex_right;
 elseif strcmpi(trials(runningVals.currentTrial).Stimulus, 'Left_Arrow.bmp')
-    img = obj.arrow_tex_left;
+    go_img = obj.arrow_tex_left;
 else
     error('Invalid arrow direction - use ''Right_Arrow.bmp'' or ''Left_Arrow.bmp''');
 end
 
-Screen('DrawTexture', obj.window, img, [], obj.arrow_rect, 0);
+Screen('DrawTexture', obj.window, go_img, [], obj.lr_arrow_rect, 0);
 obj.DrawPerformanceMetrics(runningVals);
 [~, tGoStimOn, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
 trials(runningVals.currentTrial).GoSignalOnsetTimestamp = tGoStimOn;
@@ -54,8 +54,8 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
     end
     
     % End the stimulus and add timestamp
-    [~, tGoStimOff, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
-    trials(runningVals.currentTrial).GoSignalOffsetTimestamp = tGoStimOff;
+    [~, goSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
+    trials(runningVals.currentTrial).GoSignalOffsetTimestamp = goSignalEndTime;
     
     % If the subject responded with a key press, record which key they 
     % pressed and their Go reaction time
@@ -87,8 +87,8 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
     end
     trials(runningVals.currentTrial).SSD_intended = ssd;
     
-    soundStarted = false;
-    soundPlaying = false;
+    stopSignalStarted = false;
+    stopSignalOn = false;
     timedout = false;
     while ~timedout
         
@@ -99,49 +99,72 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         
         if keyIsDown
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
-            if soundStarted
-                [~, ~, ~, estStopTime] = PsychPortAudio('Stop', obj.snd_pahandle);
-                trials(runningVals.currentTrial).StopSignalOffsetTimestamp = estStopTime;
+            if stopSignalStarted
+                [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
+                trials(runningVals.currentTrial).StopSignalOffsetTimestamp = stopSignalEndTime;
             end
             break;
         end
         
-        % Start the stop signal beep if the stop-signal delay (SSD) has elapsed
-        % Subtract sound latency from ssd - issue the sound play command
-        % slightly before when it needs to start, so it begins physically 
-        % playing on time. 
-        if (keyTime - tGoStimOn) >= ssd - obj.snd_latency && soundStarted == false
-            soundStartTime = PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
-            trials(runningVals.currentTrial).StopSignalOnsetTimestamp = soundStartTime;
+        % Start the stop signal if the stop-signal delay (SSD) has elapsed
+        if (keyTime - tGoStimOn) >= ssd && stopSignalStarted == false
+            
+            if strcmpi(settings.StopSignalType, 'auditory')
+                stopSignalStartTime = PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
+            elseif strcmpi(settings.StopSignalType, 'visual')
+                % Redraw go image and performance metrics, and also draw up
+                % arrow stop signal
+                Screen('DrawTexture', obj.window, go_img, [], obj.lr_arrow_rect, 0);
+                obj.DrawPerformanceMetrics(runningVals);
+                Screen('DrawTexture', obj.window, obj.arrow_tex_up, [], obj.up_arrow_rect, 0);
+                [~, stopSignalStartTime, ~, ~, ~]  = Screen('Flip',obj.window);
+            else
+                error('Please set settings.StopSignalType to ''visual'' or ''auditory'' in ExperimentSettings.m');
+            end
+            trials(runningVals.currentTrial).StopSignalOnsetTimestamp = stopSignalStartTime;
             trials(runningVals.currentTrial).SSD_actual = trials(runningVals.currentTrial).StopSignalOnsetTimestamp - trials(runningVals.currentTrial).GoSignalOnsetTimestamp;
-            soundPlaying = true;
-            soundStarted = true;
+            stopSignalOn = true;
+            stopSignalStarted = true;
         end
         
-        %Stop sound from playing if it has been playing long enough
-        if soundPlaying
-            if (keyTime - soundStartTime) > obj.settings.StopSignalDur
-                [~, ~, ~, estStopTime] = PsychPortAudio('Stop', obj.snd_pahandle);
-                trials(runningVals.currentTrial).StopSignalOffsetTimestamp = estStopTime;
-                soundPlaying = false;
+        %Stop the stop signal if it has been presented long enough
+        if stopSignalOn
+            if (keyTime - stopSignalStartTime) > obj.settings.StopSignalDur
+                
+                if strcmpi(settings.StopSignalType, 'auditory')
+                    [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
+                elseif strcmpi(settings.StopSignalType, 'visual')
+                    Screen('DrawTexture', obj.window, go_img, [], obj.lr_arrow_rect, 0);
+                    obj.DrawPerformanceMetrics(runningVals);
+                    [~, stopSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window);
+                end
+                trials(runningVals.currentTrial).StopSignalOffsetTimestamp = stopSignalEndTime;
+                stopSignalOn = false;
             end
         end
         
         % Time out after TrialDur if no key presses
         if (keyTime - tGoStimOn) > obj.settings.TrialDur
-            [~, ~, ~, estStopTime] = PsychPortAudio('Stop', obj.snd_pahandle);
-            trials(runningVals.currentTrial).StopSignalOffsetTimestamp = estStopTime;
             trials(runningVals.currentTrial).Answer = 0;
             timedout = true;
         end
     end
     
     % End the stimulus and add timestamp
-    [~, tGoStimOff, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
-    trials(runningVals.currentTrial).GoSignalOffsetTimestamp = tGoStimOff;
+    [~, goSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
+    trials(runningVals.currentTrial).GoSignalOffsetTimestamp = goSignalEndTime;
+    
+    if stopSignalOn && timedout % If the stop signal was still on when the trial timed out
+        if strcmpi(settings.StopSignalType, 'auditory')
+            [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
+            trials(runningVals.currentTrial).StopSignalOffsetTimestamp = stopSignalEndTime;
+        elseif strcmpi(settings.StopSignalType, 'visual')
+            trials(runningVals.currentTrial).StopSignalOffsetTimestamp = goSignalEndTime; % Screen('Flip'...) removes both stop and go visual stimuli at same time
+        end
+    end
     
     if(timedout)
-        % Subject stopped successfully
+        % Subject stopped successfully if the stop trial timed out
         trials(runningVals.currentTrial).Correct = true;
         runningVals.StopCorrect = runningVals.StopCorrect + 1;
         

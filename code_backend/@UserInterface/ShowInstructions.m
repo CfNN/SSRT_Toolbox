@@ -4,13 +4,13 @@ function ShowInstructions(obj)
 % See also SHOWREADYTIMER
 % -------------------
 
-% Can proceed by hitting any key. 
-% Use (eg.) activeKeys = [KbName('space'), KbName('return')] to only 
+% User can proceed by hitting any key. 
+% Change to (eg.) activeKeys = [KbName('space'), KbName('return')] to only 
 % respond to the space or enter keys. 
 activeKeys = [];
 RestrictKeysForKbCheck(activeKeys);
 
-instructions = [
+instructions = [ % Use \n to start a new line. Just one \n doesn't give enough space - best to use two or three
     'Now we''re ready to start!\n\n\n',...
     'When you see the LEFT arrow, press the LEFT arrow key.\n\n',...
     'When you see the RIGHT arrow, press the RIGHT arrow key.\n\n\n',...

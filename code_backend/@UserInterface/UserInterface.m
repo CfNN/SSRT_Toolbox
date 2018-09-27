@@ -130,11 +130,13 @@ classdef UserInterface < handle
             % presentation
             PsychPortAudio('FillBuffer', obj.snd_pahandle, [obj.snd_stopBeep; obj.snd_stopBeep]);
             
-            % Play an initial beep to get the sound card started
-            % (otherwise, you get high latency on the first stop trial)
-            PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
-            pause(obj.settings.StopSignalDur + 0.010)
-            PsychPortAudio('Stop', obj.snd_pahandle)
+            if strcmpi(obj.settings.StopSignalType, 'auditory')
+                % Play an initial beep to get the sound card started
+                % (otherwise, you get high latency on the first stop trial)
+                PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
+                pause(obj.settings.StopSignalDur + 0.010)
+                PsychPortAudio('Stop', obj.snd_pahandle)
+            end
             
             %---IMAGE SETUP---%
 

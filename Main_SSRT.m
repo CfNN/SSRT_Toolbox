@@ -79,3 +79,13 @@ delete(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' setting
 sca;
 PsychPortAudio('Close');
 clear ui filename;
+
+% Display starting SSD values for next session
+ssdMsg = {'Before your next session, please set the following values in ExperimentSettings.m: (write them down first)\n',...
+       ['settings.ssd_staircase1_initial = ' num2str(runningVals.ssd1)],...
+       ['settings.ssd_staircase2_initial = ' num2str(runningVals.ssd2)]};
+msgbox(ssdMsg);
+for i = 1:length(ssdMsg)
+    disp(ssdMsg{i});
+end
+clear ssdMsg i;

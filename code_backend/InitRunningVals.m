@@ -6,12 +6,12 @@
 % Variable for keeping track of the trial number
 runningVals.currentTrial = 1;
 
-% Running stop-signal delay (SSD) values for staircases 1 and 2
-runningVals.ssd1 = settings.g_nGoDur_initial;
-runningVals.ssd2 = settings.g_nGoDur2_initial;
+% Intended stop-signal delay (SSD) values for staircases 1 and 2
+runningVals.ssd1 = settings.ssd_staircase1_initial;
+runningVals.ssd2 = settings.ssd_staircase2_initial;
 
-% delta_t values for staircases 1 and 2, will decrease over the course of
-% the experiment if settings.delta_t_decay is set to less than 1
+% delta_t values for SSD staircases 1 and 2, will decrease over the course 
+% of the session if settings.delta_t_decay is set to less than 1
 runningVals.delta_t_1 = settings.delta_t_initial;
 runningVals.delta_t_2 = settings.delta_t_initial;
 

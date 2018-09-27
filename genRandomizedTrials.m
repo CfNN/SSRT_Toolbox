@@ -162,7 +162,8 @@ function trials = assignTrial(trials, i, go_stop, staircaseNum)
     trials(i).Answer = NaN;
     trials(i).Correct = false; %Boolean indicating whether Answer matches CorrectAnswer
     trials(i).GoRT = NaN;
-    trials(i).StopSignalDelay = NaN;
+    trials(i).SSD_intended = NaN;
+    trials(i).SSD_actual = NaN;
     % Timestamps
     trials(i).GoSignalOnsetTimestamp = NaN;
     trials(i).GoSignalOffsetTimestamp = NaN;

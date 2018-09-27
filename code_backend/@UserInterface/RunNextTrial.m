@@ -40,6 +40,7 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
         % (timestamp is recorded in keyTime regardless of whether a key was
         % pressed)
         [ keyIsDown, keyTime, keyCode ] = KbCheck; % keyTime is from an internal call to GetSecs
+        
         if (keyIsDown)
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
             break;
@@ -84,7 +85,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
     else
         ssd = runningVals.ssd2;
     end
-    trials(runningVals.currentTrial).StopSignalDelay = ssd;
+    trials(runningVals.currentTrial).SSD_intended = ssd;
     
     soundStarted = false;
     soundPlaying = false;
@@ -95,6 +96,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         % (timestamp is recorded in keyTime regardless of whether a key was
         % pressed)
         [ keyIsDown, keyTime, keyCode ] = KbCheck; % keyTime is from an internal call to GetSecs
+        
         if keyIsDown
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
             if soundStarted
@@ -111,13 +113,14 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         if (keyTime - tGoStimOn) >= ssd - obj.snd_latency && soundStarted == false
             soundStartTime = PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
             trials(runningVals.currentTrial).StopSignalOnsetTimestamp = soundStartTime;
+            trials(runningVals.currentTrial).SSD_actual = trials(runningVals.currentTrial).StopSignalOnsetTimestamp - trials(runningVals.currentTrial).GoSignalOnsetTimestamp;
             soundPlaying = true;
             soundStarted = true;
         end
         
         %Stop sound from playing if it has been playing long enough
         if soundPlaying
-            if (keyTime - soundStartTime) > obj.settings.InhDur
+            if (keyTime - soundStartTime) > obj.settings.StopSignalDur
                 [~, ~, ~, estStopTime] = PsychPortAudio('Stop', obj.snd_pahandle);
                 trials(runningVals.currentTrial).StopSignalOffsetTimestamp = estStopTime;
                 soundPlaying = false;

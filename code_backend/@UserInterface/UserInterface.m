@@ -1,6 +1,6 @@
 classdef UserInterface < handle
 % USERINTERFACE - Wrapper class that contains PsychToolbox functions. Main
-% script 'Main_SSRT.m' works by using functions in this class.
+% script 'Main_SSRT.m' works primarily by using functions in this class.
     
     properties (GetAccess=private)
         % Settings (initialized once by main script, never change during
@@ -96,11 +96,14 @@ classdef UserInterface < handle
             obj.snd_waitForDeviceStart = 1;
             
             % Adding a small sound latency makes the beginning of the sound
-            % cleaner. if this is set to 0, sound card will attempt to
+            % cleaner. If this is set to 0, sound card may attempt to
             % start playing the sound before everything is actually ready.
-            % This delay should be accounted for when playing the sound in
-            % the experiment. 
-            obj.snd_latency = 0.045;
+            % This latency is accounted for when playing the sound in
+            % the experiment. Setting it to zero seems to work fine on at
+            % least one machine, otherwise try setting it to 0.015. Always
+            % make sure to look at the actual timing data (ie. compare
+            % SSD_intended with SSD_actual) to see how things are working. 
+            obj.snd_latency = 0;
 
             % Open Psych-Audio port, with the follow arguements
             % (1) [] = default snd device
@@ -112,14 +115,21 @@ classdef UserInterface < handle
             obj.snd_pahandle = PsychPortAudio('Open', [], 1, [], snd_playbackFreq, snd_nrchannels, [], obj.snd_latency);
 
             % Set the volume to full (change 1 to eg. 0.5 for half volume)
-            PsychPortAudio('Volume', obj.snd_pahandle, 1);
+            volume = 1;
+            PsychPortAudio('Volume', obj.snd_pahandle, volume);
 
             % Make a beep which we will play back to the user
-            obj.snd_stopBeep = MakeBeep(obj.settings.BeepFreq, obj.settings.InhDur, snd_playbackFreq);
+            obj.snd_stopBeep = MakeBeep(obj.settings.BeepFreq, obj.settings.StopSignalDur, snd_playbackFreq);
             
             % Fill the audio playback buffer with the audio data, doubled for stereo
             % presentation
             PsychPortAudio('FillBuffer', obj.snd_pahandle, [obj.snd_stopBeep; obj.snd_stopBeep]);
+            
+            % Play an initial beep to get the sound card started
+            % (otherwise, you get high latency on the first stop trial)
+            PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
+            pause(obj.settings.StopSignalDur + 0.010)
+            PsychPortAudio('Stop', obj.snd_pahandle)
             
             %---IMAGE SETUP---%
 

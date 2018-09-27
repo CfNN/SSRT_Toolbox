@@ -3,7 +3,9 @@
 % conservative), and which trials to use within each session (all trials in
 % each session or only the second half of trials in each session).
 % Combinations of these three options result in 12 approaches to SSRT
-% calculation, as described in Congdon et al. (2013). 
+% calculation, as described in "Measurement and Reliability of Response 
+% Inhibition" by Congdon et al. (2012), Frontiers in Psychology. 
+% Run this script after running MergeSessions.m.
 
 confirmed = false;
 cancelled = false;
@@ -31,7 +33,7 @@ if ~cancelled
     stop_ignoreTrials = false(size(stop_GoSignalOnsetTimestamp));
     
     % Estimate each subject's SSRT using the quantile method
-    subjectSSRTs_init = QuantileMethodSSRT(go_GoRT, go_Correct, stop_StopSignalDelay, stop_Correct, stop_IsTrial);
+    subjectSSRTs_init = QuantileMethodSSRT(go_GoRT, go_Correct, stop_SSD_actual, stop_Correct, stop_IsTrial);
     
     if strcmpi(AverageLast, 'Last')
         % Ignore data from all sessions except the last one from each
@@ -103,17 +105,17 @@ if ~cancelled
     % number')
     go_GoRT_sparse = go_GoRT;
     go_Correct_sparse = go_Correct;
-    stop_StopSignalDelay_sparse = stop_StopSignalDelay;
+    stop_SSD_actual_sparse = stop_SSD_actual;
     stop_Correct_sparse = stop_Correct;
     stop_IsTrial_sparse = stop_IsTrial;
     
     go_GoRT_sparse(go_ignoreTrials) = NaN;
     go_Correct_sparse(go_ignoreTrials) = false;
-    stop_StopSignalDelay_sparse(stop_ignoreTrials) = NaN;
+    stop_SSD_actual_sparse(stop_ignoreTrials) = NaN;
     stop_Correct_sparse(stop_ignoreTrials) = false;
     stop_IsTrial_sparse(stop_ignoreTrials) = false;
     
-    subjectSSRTs_final = QuantileMethodSSRT(go_GoRT_sparse, go_Correct_sparse, stop_StopSignalDelay_sparse, stop_Correct_sparse, stop_IsTrial_sparse);
+    subjectSSRTs_final = QuantileMethodSSRT(go_GoRT_sparse, go_Correct_sparse, stop_SSD_actual_sparse, stop_Correct_sparse, stop_IsTrial_sparse);
     
     fprintf('\nEstimated SSRT values for each subject: \n');
     for p = 1:numel(subjectSSRTs_final)

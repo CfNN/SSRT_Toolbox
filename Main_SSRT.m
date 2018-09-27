@@ -51,7 +51,7 @@ ui.ShowFixation(0.5, runningVals);
 % track of which trial you are on)
 while (runningVals.currentTrial <= length(trials))
     % Show the fixation cross
-    ui.ShowFixation(settings.FixationDuration, runningVals);
+    ui.ShowFixation(settings.FixationDur, runningVals);
     
     % Run the go or stop trial (depending on what is in this row of the
     % trial struct)
@@ -62,7 +62,7 @@ while (runningVals.currentTrial <= length(trials))
     runningVals = UpdateLivePerfMetrics(runningVals);
     
     % Show a blank screen
-    ui.ShowBlank(settings.FixationDuration, runningVals);
+    ui.ShowBlank(settings.BlankDur, runningVals);
     
     % Autosave data in case the experiment is interrupted partway through
     save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness');

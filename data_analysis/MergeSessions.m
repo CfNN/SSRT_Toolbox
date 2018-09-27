@@ -2,7 +2,12 @@
 % folder, and combine the data into 3D arrays. Separate 3D arrays are 
 % produced for each variable in the "trials" struct array, and are further
 % separated into 'stop_...' and 'go_...' for stop trials and go trials. For
-% example, 
+% example, stop_GoRT and go_GoRT contain the reaction time to the go
+% stimulus (if the subject responded) for all stop trials and all go trials
+% respectively. Each 3D array contains data from all participants and all
+% sessions, and is indexed by participant, session, and trial number in 
+% that order - e.g. go_GoRT(2, 3, 8) evaluates to the GoRT of the 8th go
+% trial in the 3rd session for participant number 2. 
 
 % Get a list of .mat files in data_merge folder
 dirs = dir('session_files/*.mat');
@@ -18,9 +23,9 @@ mergeSummary(numel(filenames)) = struct('filename', [], 'subjectNumber', [], 'se
 % missing trials aren't affecting calculations related to the number of
 % trials completed (eg. proportion of correct stop trials). Index using
 % [subjectNumber, sessionNumber]. 
-% Eg. 
-go_TrialCounts = []; % Initialize properly after first pass through data file
-stop_TrialCounts = [];
+% % Initialize properly after first pass through data file
+go_TrialCounts = []; %#ok<NASGU> 
+stop_TrialCounts = []; %#ok<NASGU>
 
 % First pass through the files, checking for duplicates, establishing the
 % size of the output data arrays
@@ -73,7 +78,8 @@ stop_GoSignalOnsetTimestamp = nan(stopDataSize);
 stop_GoSignalOffsetTimestamp = nan(stopDataSize);
 stop_ResponseTimestamp = nan(stopDataSize);
 % The following are only present for stop_, not go_
-stop_StopSignalDelay = nan(stopDataSize);
+stop_SSD_intended = nan(stopDataSize);
+stop_SSD_actual = nan(stopDataSize);
 stop_StopSignalOnsetTimestamp = nan(stopDataSize);
 stop_StopSignalOffsetTimestamp = nan(stopDataSize);
 
@@ -121,7 +127,8 @@ for i = 1:numel(filenames)
     stop_GoSignalOffsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOffsetTimestamp];
     stop_ResponseTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).ResponseTimestamp];
     % The following are only present for stop_, not go_
-    stop_StopSignalDelay(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalDelay];
+    stop_SSD_intended(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_intended];
+    stop_SSD_actual(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_actual];
     stop_StopSignalOnsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOnsetTimestamp];
     stop_StopSignalOffsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOffsetTimestamp];
     

@@ -1,7 +1,16 @@
+% Use this script to visualize the exponential decay of delta_t, the
+% increment by which the stop signal delay changes in between stop trials.
+% Set the initial delta_t, the decay rate, and the number of stop trials
+% for each staircase (half the total number of trials with two staircases)
+% to your desired values. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delta_t_initial = 100;
 delta_t_decay = 0.8; % decay rate
-n_trials = 16; % number of trials
-%%%%%%%%%%%%%%%%%%%%%%
+n_trials = 16; % number of stop trials (1 staircase only)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 ssds = zeros(n_trials, 1);
 ssds(1) = delta_t_initial;
 

@@ -1,8 +1,8 @@
-function genRandomizedTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_maxConsecStopTrials)
-% GENRANDOMIZEDTRIALS - Generates a pseudo-random block of trials. Trial
+function GenRandomTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_maxConsecStopTrials)
+% GENRANDOMTRIALS - Generates a pseudo-random block of trials. Trial
 % order is random with certain enforced features (see below).
 %
-% Usage: genRandomizedTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_maxConsecStopTrials); 
+% Usage: GenRandomTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_maxConsecStopTrials); 
 %
 % n_trials: Total number of trials in the session
 %
@@ -16,7 +16,7 @@ function genRandomizedTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, 
 % should be allowed. Set equal to n_trials if it doesn't matter if there
 % are several consecutive stop trials by chance. 
 %
-% See also GENRANDOMIZEDTRIALSSIMPLE
+% See also GENRANDOMTRIALSSIMPLE
 % ----------------
 
 

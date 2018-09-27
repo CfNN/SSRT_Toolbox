@@ -17,8 +17,8 @@ settings.DisplayPerfMetrics = true;
 % convention from E-Prime experiment used. Note that these are temporary
 % variables that will NOT change during the experiment (runningVals.ssd1
 % and runningVals.ssd2 are used instead). 
-settings.ssd_staircase1_initial = 0.16763; % seconds. Typically 0.200
-settings.ssd_staircase2_initial = 0.19383; % seconds. Typically 0.300
+settings.ssd_staircase1_initial = 0.200; % seconds. Typically 0.200
+settings.ssd_staircase2_initial = 0.300; % seconds. Typically 0.300
 
 % The stop signal delay (SSD) changes +/- between trials by this amount of
 % time (staircase procedure)

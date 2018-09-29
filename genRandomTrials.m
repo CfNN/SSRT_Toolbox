@@ -113,5 +113,6 @@ for i = 1:n_trials
 end
 
 assignin('base', 'trials', trials);
+save('CURRENTTRIALS.mat');
 
 end

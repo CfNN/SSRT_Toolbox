@@ -86,7 +86,7 @@ while(tooManyConsecutiveStopTrials)
                 stop_trial(i) = false;
                 % Choose a random go trial, after the enforced period of 
                 % initial go trials, to change to a stop trial
-                newStopTrialLoc = randsample(find(not(stop_trial(n_enforcedInitialGoTrials+1:end) )), 1) + n_enforcedInitialGoTrials; %#ok<COLND>
+                newStopTrialLoc = randsample(find(not(stop_trial(n_enforcedInitialGoTrials+1:end) )), 1) + n_enforcedInitialGoTrials;
                 stop_trial(newStopTrialLoc) = true;
             end
         else
@@ -114,5 +114,6 @@ end
 
 assignin('base', 'trials', trials);
 save('CURRENTTRIALS.mat');
+disp('Random ''trials'' struct saved as CURRENTTRIALS.mat');
 
 end

@@ -1,12 +1,12 @@
-function TimingDiscrepancy_manual(filename)
-% TIMINGDISCREPANCY_MANUAL - Manually test whether the timing of an
+function TimingDiscrepancy_manualtest(filename)
+% TIMINGDISCREPANCY_MANUALTEST - Manually test whether the timing of an
 % experiment session was precisely as intended, particularly whether the 
 % stop signal was presented on time (ie stop signal delay was no longer or 
 % shorter than expected). You will need to examine the output of this 
 % function on the console to determine whether the SSD discrepancies are 
 % within acceptable limits for your experiment. 
 %
-% Example usage: TimingDiscrepancy_manual('subj1_sess1_SSRT.mat');
+% Example usage: TimingDiscrepancy_manualtest('subj1_sess1_SSRT.mat');
 
 load(filename, 'trials');
 

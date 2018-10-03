@@ -9,9 +9,16 @@
 % that order - e.g. go_GoRT(2, 3, 8) evaluates to the GoRT of the 8th go
 % trial in the 3rd session for participant number 2. 
 
-% Get a list of .mat files in data_merge folder
-dirs = dir('session_files/*.mat');
-filenames = {dirs.name};
+% Get a list of .mat files in session_files folder. dirs is initialized
+% manually for software tests, in which case it should not be initialized
+% here.
+if ~exist('directory', 'var')
+    directory = 'session_files';
+end
+dir_results = dir([directory '/*.mat']);
+filenames = {dir_results.name};
+
+assert(numel(filenames) > 0, ['No files found in ' directory]);
 
 % Contains the subject number, session number, handedness, number of go and
 % stop trials in each file. Note that ordering depends on the names of the
@@ -32,7 +39,7 @@ stop_TrialCounts = []; %#ok<NASGU>
 for i = 1:numel(filenames)
     filename = filenames{i};
     mergeSummary(i).filename = filename;
-    load(['session_files\' filename]);
+    load([directory '/' filename]);
     
     mergeSummary(i).subjectNumber = subjectNumber;
     mergeSummary(i).sessionNumber = sessionNumber;
@@ -89,8 +96,8 @@ stop_StopSignalOffsetTimestamp = nan(stopDataSize);
 % might end up with participant numbers like 1, 2, and 5. These anomalies
 % will leave large swathes of NaN's in the data, in which case operations
 % like counting trials become less straightforward. 
-go_IsTrial = false(goDataSize); 
-stop_IsTrial = false(stopDataSize);
+go_TrialComplete = false(goDataSize); 
+stop_TrialComplete = false(stopDataSize);
 
 go_TrialCounts = zeros(max([mergeSummary.subjectNumber]), max([mergeSummary.sessionNumber]));
 stop_TrialCounts = zeros(max([mergeSummary.subjectNumber]), max([mergeSummary.sessionNumber]));
@@ -98,7 +105,7 @@ stop_TrialCounts = zeros(max([mergeSummary.subjectNumber]), max([mergeSummary.se
 % Second pass - this time, load the data into the arrays
 for i = 1:numel(filenames)
     filename = filenames{i};
-    load(['session_files/' filename]);
+    load([directory '/' filename]);
     
     go_TrialCounts(subjectNumber, sessionNumber) = mergeSummary(i).goTrialCount;
     stop_TrialCounts(subjectNumber, sessionNumber) = mergeSummary(i).stopTrialCount;
@@ -132,13 +139,20 @@ for i = 1:numel(filenames)
     stop_StopSignalOnsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOnsetTimestamp];
     stop_StopSignalOffsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOffsetTimestamp];
     
-    go_IsTrial(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = ~isnan([trials(goTrialInds).GoSignalOnsetTimestamp]);
-    stop_IsTrial(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = ~isnan([trials(stopTrialInds).GoSignalOnsetTimestamp]);
+    go_TrialComplete(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = ~isnan([trials(goTrialInds).Answer]);
+    stop_TrialComplete(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = ~isnan([trials(stopTrialInds).Answer]);
     
 end
 
-clear trials settings subjectNumber sessionNumber subjectHandedness;
-clear i dirs filenames filename;
-clear goDataSize stopDataSize goTrialInds stopTrialInds;
+% Only save the results of the merge if this is not part of a software test
+if ~exist('testing', 'var')
+    save(['merged_' num2str(numel(unique([mergeSummary.subjectNumber]))) 'subjects']);
+else
+    if testing == false
+        save(['merged_' num2str(numel(unique([mergeSummary.subjectNumber]))) 'subjects']);
+    end
+end
 
-save(['merged_' num2str(numel(unique([mergeSummary.subjectNumber]))) 'subjects']);
+clear trials settings subjectNumber sessionNumber subjectHandedness;
+clear i directory dir_results filenames filename testing;
+clear goDataSize stopDataSize goTrialInds stopTrialInds;

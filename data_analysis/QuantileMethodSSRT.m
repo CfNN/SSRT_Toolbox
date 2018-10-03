@@ -1,4 +1,4 @@
-function subjectSSRTs = QuantileMethodSSRT(go_GoRT, go_Correct, stop_SSD_actual, stop_Correct, stop_IsTrial)
+function subjectSSRTs = QuantileMethodSSRT(go_GoRT, go_Correct, stop_SSD_actual, stop_Correct, stop_TrialComplete)
 % QUANTILEMETHODSSRT - Calculate the SSRT for each subject using the
 % quantile method, as described in "Measurement and Reliability of Response 
 % Inhibition" by Congdon et al. (2012), Frontiers in Psychology. 
@@ -12,41 +12,44 @@ function subjectSSRTs = QuantileMethodSSRT(go_GoRT, go_Correct, stop_SSD_actual,
     
     for p = 1:numSubjectSlots % For each participant of subjectNumber p
         
-        if nnz((stop_IsTrial(p, :, :))) > 0 % If there is any data for this subject
+        if nnz((stop_TrialComplete(p, :, :))) > 0 % If there is any data for this subject
         
             % Compute average stop signal delay for this subject. Nanmean is
             % like mean, but it ignores NaN values. 
             averageSSD = nanmean(reshape(stop_SSD_actual(p, :, :), 1, []));
+            
+            % Select trials for just this participant
+            p_go_GoRT = go_GoRT(p, :, :);
+            p_go_Correct = go_Correct(p, :, :);
 
             % Get all go reaction times where the response was correct, and
             % use data only from this participant
-            correctGoRT = go_GoRT(go_Correct);
-            correctGoRT = reshape(correctGoRT(p, :, :), 1, []);
+            p_correctGoRT = p_go_GoRT(p_go_Correct);
 
             % Sort selected GoRTs in ascending order
-            correctGoRT = sort(correctGoRT);
+            p_correctGoRT = sort(p_correctGoRT);
 
             % Get proportion of failed inhibition (proportion of stop trials
             % where the participant failed to stop).
-            propStopFail = 1 - ( nnz(stop_Correct(p, :, :)) / nnz(stop_IsTrial(p, :, :)) );
+            propStopFail = 1 - ( nnz(stop_Correct(p, :, :)) / nnz(stop_TrialComplete(p, :, :)) );
 
             % Get the index of the correct GoRT corresponding to the proportion
             % of failed stop trials
-            quantileInd = round(propStopFail*numel(correctGoRT));
+            quantileInd = round(propStopFail*numel(p_correctGoRT));
             
             if quantileInd < 1
                 fprintf(['Warning - index of correct GoRT corresponding to proportion of failed stop trials is zero, setting to 1 for subject # ' num2str(p) '\n']);
                 quantileInd = 1;
             end
             
-            if numel(correctGoRT) == 0
+            if numel(p_correctGoRT) == 0
                 fprintf(['No correct go trials for subject #' num2str(p) '. No SSRT calculated for this subject \n']);
             else
                 
                 % Choose the quantileRT, the go RT at the percentile
                 % (quantile) corresponding to the proportion of failed stop
                 % trials
-                quantileRT = correctGoRT(quantileInd);
+                quantileRT = p_correctGoRT(quantileInd);
                 
                 % Estimate this subject's SSRT
                 subjectSSRTs(p) = quantileRT - averageSSD;

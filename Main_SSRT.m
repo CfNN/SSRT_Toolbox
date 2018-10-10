@@ -9,8 +9,12 @@ sca;
 % Make sure the code files in /code_backend are accessible to MATLAB
 addpath('./code_backend/');
 
-% Contains the pre-generated "trials" struct array
-load('CURRENTTRIALS.mat', 'trials');
+try
+    % Contains the pre-generated "trials" struct array
+    load('CURRENTTRIALS.mat', 'trials');
+catch
+    error('CURRENTTRIALS.mat not found. Generate a trial sequence by running GenRandomTrials.m or GenRandomTrialsSimple.m. Type ''help GenRandomTrials'' or ''help GenRandomTrialsSimple'' in the MATLAB console for information on how to use these functions.');
+end
 
 % Set user-defined variables to configure experiment. creates a workspace
 % struct variable called 'settings'. Settings variables should NEVER change

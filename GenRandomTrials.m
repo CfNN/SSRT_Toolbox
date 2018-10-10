@@ -4,8 +4,8 @@ function GenRandomTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_ma
 %
 % Usage: GenRandomTrials(n_trials, n_stopTrials, n_enforcedInitialGoTrials, n_maxConsecStopTrials); 
 %
-% Eg. for a trial sequence with 128 trials, 32 stop trials, 8 go trials at
-% the beginning, and no more than 3 stop trials in a row, use:
+% Eg. for a randomized trial sequence with 128 trials, 32 stop trials, 8 go 
+% trials at the beginning, and no more than 3 stop trials in a row, use:
 % GenRandomTrials(128, 32, 8, 3);
 %
 % n_trials: Total number of trials in the session

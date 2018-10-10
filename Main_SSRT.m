@@ -43,7 +43,7 @@ ui.ShowInstructions();
 % Use the ui to show the "ready" screen with a timer, and wait for the MRI
 % trigger (or a key press, depending on what is specified in
 % ExperimentSettings.m)
-TriggerTimestamp = ui.ShowReadyTrigger();
+triggerTimestamp = ui.ShowReadyTrigger();
 
 % Use the ui to show a fixation cross for the specified amount of time in
 % seconds

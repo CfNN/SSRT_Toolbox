@@ -1,4 +1,4 @@
-function TriggerTimestamp = ShowReadyTrigger(obj)
+function triggerTimestamp = ShowReadyTrigger(obj)
 % SHOWREADYTRIGGER - Shows a 'ready' screen. The experiment can be
 % continued with a key press or an MRI trigger. A timer is included, which
 % allows the experimenter to check whether the MRI is starting up within a 
@@ -47,7 +47,7 @@ timedout = false;
 
         [ keyIsDown, keyTime, ~ ] = KbCheck(activeKeys); 
         if (keyIsDown)
-            TriggerTimestamp = keyTime;
+            triggerTimestamp = keyTime;
             assignin('base', 'TriggerTimestamp', keyTime); % Just in case
             break;
         end

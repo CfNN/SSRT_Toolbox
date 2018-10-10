@@ -43,7 +43,9 @@ for i = 1:numel(filenames)
     
     mergeSummary(i).subjectNumber = subjectNumber;
     mergeSummary(i).sessionNumber = sessionNumber;
-    mergeSummary(i).subjectHandedness = subjectHandedness;
+    if exist('subjectHandedness', 'var')
+        mergeSummary(i).subjectHandedness = subjectHandedness;
+    end
     
     % Check for duplicate files before proceeding
     for j = 1:i-1
@@ -106,6 +108,7 @@ stop_TrialCounts = zeros(max([mergeSummary.subjectNumber]), max([mergeSummary.se
 for i = 1:numel(filenames)
     filename = filenames{i};
     load([directory '/' filename]);
+    disp(filename);
     
     go_TrialCounts(subjectNumber, sessionNumber) = mergeSummary(i).goTrialCount;
     stop_TrialCounts(subjectNumber, sessionNumber) = mergeSummary(i).stopTrialCount;

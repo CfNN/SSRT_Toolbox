@@ -1,4 +1,4 @@
-function [trials, settings, subjectNumber, sessionNumber, subjectHandedness, sessionStartDateTime, TriggerTimestamp] = convert_eprime(T, headervars)
+function [trials, settings, subjectNumber, sessionNumber, sessionStartDateTime, triggerTimestamp] = convert_eprime(T, headervars)
     
     TS = table2struct(T);
     
@@ -19,7 +19,7 @@ function [trials, settings, subjectNumber, sessionNumber, subjectHandedness, ses
     subjectNumber = str2double(headervars.Subject);
     sessionNumber = str2double(headervars.Session);
     sessionStartDateTime = headervars.SessionStartDateTimeUtc;
-    TriggerTimestamp = getSingleVal('SayWaiting__RTTime', T);
+    triggerTimestamp = getSingleVal('SayWaiting__RTTime', T);
     settings.ExperimentName = headervars.Experiment;
     settings.FixationDur = getSingleVal('FixationDur', T);
     settings.StopSignalDur = getSingleVal('InhDur', T);
@@ -34,7 +34,7 @@ function [trials, settings, subjectNumber, sessionNumber, subjectHandedness, ses
     trials = setTrialProcedureVals(trials, TS_RowInds_all, {'Go__OnsetTime', 'Go1s__OnsetTime', 'Go1s2__OnsetTime'}, TS);
     trials = setTrialVals(trials, trials_RowInds_all, TS_RowInds_all, 'Stimulus', 'Stimulus', TS);
     trials = setTrialVals(trials, trials_RowInds_all, TS_RowInds_all, 'CorrectAnswer', 'CorrectAnswer', TS);
-    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'Answer', {'Go__RESP', 'Go1s__RESP', 'Go1s2__RESP', 'Go2s__RESP', 'Go2s2__RESP', 'Inhs__RESP', 'Inhs2__RESP'}, TS, false);
+    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'Answer', {'Go__RESP', 'Go1s__RESP', 'Go1s2__RESP', 'Go2s__RESP', 'Go2s2__RESP', 'Inhs__RESP', 'Inhs2__RESP'}, TS, false, false);
     
     % These are placeholders, they will be set in a loop later
     trials(1).CorrectAnswer = [];
@@ -43,11 +43,11 @@ function [trials, settings, subjectNumber, sessionNumber, subjectHandedness, ses
     trials(1).SSD_intended = [];
     trials(1).SSD_actual = [];
     
-    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'GoSignalOnsetTimestamp', {'Go__OnsetTime', 'Go1s__OnsetTime', 'Go1s2__OnsetTime'}, TS, false);
+    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'GoSignalOnsetTimestamp', {'Go__OnsetTime', 'Go1s__OnsetTime', 'Go1s2__OnsetTime'}, TS, false, true);
     trials(1).GoSignalOffsetTimestamp = []; % Placeholder - included for completeness
-    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'StopSignalOnsetTimestamp', {'Inhs__OnsetTime', 'Inhs2__OnsetTime'}, TS, false);
+    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'StopSignalOnsetTimestamp', {'Inhs__OnsetTime', 'Inhs2__OnsetTime'}, TS, false, true);
     trials(1).StopSignalOffsetTimestamp = []; % Placeholder - included for completeness
-    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'ResponseTimestamp', {'Go__RTTime', 'Go1s__RTTime', 'Go1s2__RTTime', 'Go2s__RTTime', 'Go2s2__RTTime', 'Inhs__RTTime', 'Inhs2__RTTime'}, TS, true);
+    trials = setTrialValsCollapseCols(trials, TS_RowInds_all, 'ResponseTimestamp', {'Go__RTTime', 'Go1s__RTTime', 'Go1s2__RTTime', 'Go2s__RTTime', 'Go2s2__RTTime', 'Inhs__RTTime', 'Inhs2__RTTime'}, TS, true, false);
     
     trials = setTrialVals(trials, trials_RowInds_all, TS_RowInds_all, 'GoDur', 'GoDur', TS);
     trials = setTrialVals(trials, trials_RowInds_all, TS_RowInds_all, 'GoDur2', 'GoDur2', TS);
@@ -60,11 +60,11 @@ function [trials, settings, subjectNumber, sessionNumber, subjectHandedness, ses
         
         trials(t).GoRT = trials(t).ResponseTimestamp - trials(t).GoSignalOnsetTimestamp;
         
-        if strcmpi(trials(t).Procedure, 'GoTrial')
+        if strcmpi(trials(t).Procedure, 'StGTrial')
             trials(t).SSD_intended = NaN;
-        elseif strcmpi(trials(t).Procedure, 'StopTrial_SC1')
+        elseif strcmpi(trials(t).Procedure, 'StITrial')
             trials(t).SSD_intended = trials(t).GoDur;
-        elseif strcmpi(trials(t).Procedure, 'StopTrial_SC2')
+        elseif strcmpi(trials(t).Procedure, 'StITrial2')
             trials(t).SSD_intended = trials(t).GoDur2;
         end
         
@@ -107,6 +107,24 @@ function [trials, settings, subjectNumber, sessionNumber, subjectHandedness, ses
     
 end
 
+function trials = setTrialProcedureVals(trials, TS_RowInds_all, TS_fieldnames, TS)
+    cellvars = getVarsAsCell(TS_fieldnames, TS_RowInds_all, TS);
+    
+    TS_ProcNames = {'StGTrial', 'StITrial', 'StITrial2'};
+
+    for r = 1:size(cellvars, 1)
+        valCount = 0;
+        for c = 1:size(cellvars, 2)
+            if ~isempty(cellvars{r, c}) && cellvars{r, c} ~= 0
+                valCount = valCount + 1;
+                trials(r).Procedure = TS_ProcNames{c};
+            end
+        end
+        assert(valCount < 2, ['More than 1 non-empty cell in row ' num2str(r)]);
+    end
+    
+end
+
 function val = getSingleVal(T_fieldname, T)
     val = cell2mat(table2array(T(   ~cellfun(@isempty,   table2cell(T(:, {T_fieldname}))  )   , {T_fieldname})));
     if numel(val) > 1
@@ -119,37 +137,9 @@ function trials = setTrialVals(trials, trials_RowInds, TS_RowInds, trials_fieldn
     [trials(trials_RowInds).(trials_fieldname)] = deal(temp{:});
 end
 
-function trials = setTrialValsCollapseCols(trials, TS_RowInds_all, trials_fieldname, TS_fieldnames, TS, ignoreZeros)
-    cellvar = collapseCellVars(getVarsAsCell(TS_fieldnames, TS_RowInds_all, TS), ignoreZeros);
+function trials = setTrialValsCollapseCols(trials, TS_RowInds_all, trials_fieldname, TS_fieldnames, TS, ignoreZeros, assert1val)
+    cellvar = collapseCellVars(getVarsAsCell(TS_fieldnames, TS_RowInds_all, TS), ignoreZeros, assert1val);
     [trials(:).(trials_fieldname)] = deal(cellvar{:});
-end
-
-function trials = setTrialProcedureVals(trials, TS_RowInds_all, TS_fieldnames, TS)
-    cellvars = getVarsAsCell(TS_fieldnames, TS_RowInds_all, TS);
-    
-    TS_ProcNames = {'StGTrial', 'StITrial', 'StITrial2'};
-
-    for r = 1:size(cellvars, 1)
-        valCount = 0;
-        for c = 1:size(cellvars, 2)
-            if ~isempty(cellvars{r, c}) && cellvars{r, c} ~= 0
-                valCount = valCount + 1;
-                Procedure_Eprime = char(TS_ProcNames{c});
-                switch Procedure_Eprime
-                    case 'StGTrial'
-                        trials(r).Procedure = 'GoTrial';
-                    case 'StITrial'
-                        trials(r).Procedure = 'StopTrial_SC1';
-                    case 'StITrial2'
-                        trials(r).Procedure = 'StopTrial_SC2';
-                    otherwise
-                        error('Invalid procedure name in E-Prime data - check data or modify convert_eprime.m to fix');
-                end
-            end
-        end
-        assert(valCount < 2, ['More than 1 non-empty cell in row ' num2str(r)]);
-    end
-    
 end
 
 function cellvars = getVarsAsCell(TS_fieldnames, TS_RowInds_all, TS)
@@ -162,7 +152,7 @@ function cellvars = getVarsAsCell(TS_fieldnames, TS_RowInds_all, TS)
     end
 end
 
-function cellvar = collapseCellVars(cellvars, ignoreZeros)
+function cellvar = collapseCellVars(cellvars, ignoreZeros, assert1val)
 
 cellvar = cell(size(cellvars, 1), 1);
 
@@ -172,6 +162,9 @@ cellvar = cell(size(cellvars, 1), 1);
             if ~isempty(cellvars{r, c}) && (~ignoreZeros || cellvars{r, c} ~= 0)
                 valCount = valCount + 1;
                 cellvar{r} = cellvars{r, c};
+                if ~assert1val
+                    break;
+                end
             end
         end
         assert(valCount < 2, ['More than 1 non-empty cell in row ' num2str(r)]);

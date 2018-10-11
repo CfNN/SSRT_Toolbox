@@ -184,9 +184,17 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         % rate is set to 1)
         if strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial')
             runningVals.ssd1 = runningVals.ssd1 - runningVals.delta_t_1;
+            % Make sure SSD never goes negative
+            if runningVals.ssd1 < 0
+                runningVals.ssd1 = 0;
+            end
             runningVals.delta_t_1 = runningVals.delta_t_1*settings.delta_t_decay;
         else
             runningVals.ssd2 = runningVals.ssd2 - runningVals.delta_t_2;
+            % Maake sure SSD never goes negative
+            if runningVals.ssd2 < 0
+                runningVals.ssd2 = 0;
+            end
             runningVals.delta_t_2 = runningVals.delta_t_2*settings.delta_t_decay;
         end
         

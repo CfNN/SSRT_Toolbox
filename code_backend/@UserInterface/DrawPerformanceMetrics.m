@@ -18,7 +18,9 @@ if obj.settings.DisplayPerfMetrics == true
     Screen('TextSize', obj.window, 18);
     Screen('TextFont', obj.window, 'Courier New');
     Screen('TextSTyle', obj.window, 0); % 0 is regular (not bold, italicized, etc)
-    DrawFormattedText(obj.window, perfMetrics, 'center', obj.screenYpixels * 0.96, obj.c_white);
+    % Change the value in "obj.screenYpixels - 50" to modify the vertical
+    % position of the performance metrics.     q
+    DrawFormattedText(obj.window, perfMetrics, 'center', obj.screenYpixels - 50, obj.c_white);
 end
 
 end

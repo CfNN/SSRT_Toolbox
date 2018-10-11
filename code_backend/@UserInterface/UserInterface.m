@@ -163,7 +163,7 @@ classdef UserInterface < handle
             obj.up_arrow_rect = [0 0 lr_arrow_height lr_arrow_width]; % Width/height reversed due to 90 deg rotation
             
             obj.lr_arrow_rect = CenterRectOnPointd(obj.lr_arrow_rect, obj.screenXpixels / 2, obj.screenYpixels / 2);
-            obj.up_arrow_rect = CenterRectOnPointd(obj.up_arrow_rect, obj.screenXpixels / 2, (obj.screenYpixels / 2) - (lr_arrow_height+lr_arrow_width)/2);
+            obj.up_arrow_rect = CenterRectOnPointd(obj.up_arrow_rect, obj.screenXpixels / 2, obj.screenYpixels / 2);
         end
         
         ShowInstructions(obj);

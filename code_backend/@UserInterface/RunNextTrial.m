@@ -108,9 +108,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
             if strcmpi(settings.StopSignalType, 'auditory')
                 stopSignalStartTime = PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
             elseif strcmpi(settings.StopSignalType, 'visual')
-                % Redraw go image and performance metrics, and also draw up
-                % arrow stop signal
-                Screen('DrawTexture', obj.window, go_img, [], obj.lr_arrow_rect, 0);
+                % Redraw performance metrics, draw up arrow stop signal
                 obj.DrawPerformanceMetrics(runningVals);
                 Screen('DrawTexture', obj.window, obj.arrow_tex_up, [], obj.up_arrow_rect, 0);
                 [~, stopSignalStartTime, ~, ~, ~]  = Screen('Flip',obj.window);

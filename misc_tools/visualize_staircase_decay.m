@@ -4,7 +4,7 @@
 % for each staircase (half the total number of trials with two staircases)
 % to your desired values. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delta_t_initial = 50; % Initial increment by which ssd changes between stop trials
+delta_t_initial = 0.050; % Initial increment by which ssd changes between stop trials
 delta_t_decay = 0.9; % Decay rate
 n_trials = 16; % Number of stop trials (1 staircase only). Should be half the total number of stop trials in a session.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

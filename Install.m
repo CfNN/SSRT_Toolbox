@@ -4,20 +4,23 @@ catch
     warning('Psychtoolbox not installed. Install it using instructions on this page: http://psychtoolbox.org/download');
 end
 
-try
+if ~exist('data_analysis/session_files', 'dir')
     mkdir data_analysis/session_files
-catch
-    Warning('data_analysis/session_files directory already exists');
+    disp('Created directory data_analysis/session_files');
+else
+    warning('data_analysis/session_files directory already exists');
 end
-
-try
+    
+if ~exist('eprime_conversion/eprime_input', 'dir')
     mkdir eprime_conversion/eprime_input
-catch
-    Warning('eprime_conversion/eprime_input directory already exists');
+    disp('Created directory eprime_conversion/eprime_input');
+else
+    warning('eprime_conversion/eprime_input directory already exists');
 end
 
-try
+if ~exist('eprime_conversion/session_files_output', 'dir')
     mkdir eprime_conversion/session_files_output
-catch
-    Warning('eprime_conversion/session_files_output directory already exists');
+    disp('Created directory eprime_conversion/session_files_output');
+else
+    warning('eprime_conversion/session_files_output directory already exists');
 end

@@ -128,7 +128,6 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
                 if strcmpi(settings.StopSignalType, 'auditory')
                     [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
                 elseif strcmpi(settings.StopSignalType, 'visual')
-                    Screen('DrawTexture', obj.window, go_img, [], obj.lr_arrow_rect, 0);
                     obj.DrawPerformanceMetrics(runningVals);
                     [~, stopSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window);
                 end

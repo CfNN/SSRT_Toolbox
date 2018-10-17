@@ -83,10 +83,10 @@ sca;
 PsychPortAudio('Close');
 clear ui filename;
 
-% Display starting SSD values for next session
-ssdMsg = {'Before your next session, please set the following values in ExperimentSettings.m: (write them down first)',...
-       ['settings.ssd_staircase1_initial = ' num2str(runningVals.ssd1)],...
-       ['settings.ssd_staircase2_initial = ' num2str(runningVals.ssd2)]};
+% Display SSD values from the end of the session (can be entered 
+ssdMsg = {'Stop-signal delays for the two staircases at the end of the session were as follows:',...
+       ['runningVals.ssd1 = ' num2str(runningVals.ssd1) ' s'],...
+       ['runningVals.ssd2 = ' num2str(runningVals.ssd2) ' s']};
 msgbox(ssdMsg);
 for i = 1:length(ssdMsg)
     disp(ssdMsg{i});

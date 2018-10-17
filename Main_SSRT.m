@@ -83,7 +83,8 @@ sca;
 PsychPortAudio('Close');
 clear ui filename;
 
-% Display SSD values from the end of the session (can be entered 
+% Display SSD values from the end of the session (can be entered into
+% ExperimentSettings.m to start the next session with these values):
 ssdMsg = {'Stop-signal delays for the two staircases at the end of the session were as follows:',...
        ['runningVals.ssd1 = ' num2str(runningVals.ssd1) ' s'],...
        ['runningVals.ssd2 = ' num2str(runningVals.ssd2) ' s']};

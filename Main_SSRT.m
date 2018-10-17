@@ -6,9 +6,6 @@ close all;
 clear;
 sca;
 
-% Make sure the code files in /code_backend are accessible to MATLAB
-addpath('./code_backend/');
-
 try
     % Contains the pre-generated "trials" struct array
     load('CURRENTTRIALS.mat', 'trials');

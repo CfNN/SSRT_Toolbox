@@ -1,4 +1,5 @@
-% Run this script to load all of the .mat files in the data_analysis
+function filename = MergeSessions(directory)
+% Run this function to load all of the .mat files in the data_analysis
 % folder, and combine the data into 3D arrays. Separate 3D arrays are 
 % produced for each variable in the "trials" struct array, and are further
 % separated into 'stop_...' and 'go_...' for stop trials and go trials. For
@@ -9,12 +10,14 @@
 % that order - e.g. go_GoRT(2, 3, 8) evaluates to the GoRT of the 8th go
 % trial in the 3rd session for participant number 2. 
 
-% Get a list of .mat files in session_files folder. dirs is initialized
-% manually for software tests, in which case it should not be initialized
-% here.
-if ~exist('directory', 'var')
+if nargin == 0
     directory = 'session_files';
+    if ~isfolder('session_files')
+        error('''session_files'' folder not found - make sure you are in the data_analysis directory in MATLAB when you run this function!');
+    end
 end
+
+% Get a list of .mat files in the chosen directory
 dir_results = dir([directory '/*.mat']);
 filenames = {dir_results.name};
 
@@ -34,12 +37,13 @@ mergeSummary(numel(filenames)) = struct('filename', [], 'subjectNumber', [], 'se
 go_TrialCounts = []; %#ok<NASGU> 
 stop_TrialCounts = []; %#ok<NASGU>
 
-% First pass through the files, checking for duplicates, establishing the
-% size of the output data arrays
+% First pass through the files, checking for duplicates, checking how many
+% unique subject numbers there are, establishing the size of the output 
+% data arrays
 for i = 1:numel(filenames)
     filename = filenames{i};
     mergeSummary(i).filename = filename;
-    load([directory '/' filename]);
+    load([directory '/' filename], 'subjectNumber', 'sessionNumber', 'subjectHandedness', 'trials');
     
     mergeSummary(i).subjectNumber = subjectNumber;
     mergeSummary(i).sessionNumber = sessionNumber;
@@ -47,7 +51,7 @@ for i = 1:numel(filenames)
         mergeSummary(i).subjectHandedness = subjectHandedness;
     end
     
-    % Check for duplicate files before proceeding
+    % Check for duplicate files, and find unique subject numbers
     for j = 1:i-1
         if mergeSummary(i).subjectNumber == mergeSummary(j).subjectNumber && mergeSummary(i).sessionNumber == mergeSummary(j).sessionNumber
             error(['Apparent duplicate files exist for subject ' num2str(subjectNumber) ' and session ' num2str(sessionNumber)]);
@@ -65,8 +69,16 @@ for i = 1:numel(filenames)
     
 end
 
-goDataSize = [max([mergeSummary.subjectNumber]), max([mergeSummary.sessionNumber]), max([mergeSummary.goTrialCount])];
-stopDataSize = [max([mergeSummary.subjectNumber]), max([mergeSummary.sessionNumber]), max([mergeSummary.stopTrialCount])];
+subjectRows = sort(unique([mergeSummary.subjectNumber]));
+sessionColumns = sort(unique([mergeSummary.sessionNumber]));
+    
+for i = 1:numel(mergeSummary)
+    mergeSummary(i).subjectRow = find(subjectRows == mergeSummary(i).subjectNumber);
+    mergeSummary(i).sessionColumn = find(sessionColumns == mergeSummary(i).sessionNumber);
+end
+
+goDataSize = [numel(subjectRows), numel(sessionColumns), max([mergeSummary.goTrialCount])];
+stopDataSize = [numel(subjectRows), numel(sessionColumns), max([mergeSummary.stopTrialCount])];
 
 % Initialize 3D matrices (of numbers) or cell arrays (of strings) for each measure
 go_Stimulus = cell(goDataSize);
@@ -101,17 +113,19 @@ stop_StopSignalOffsetTimestamp = nan(stopDataSize);
 go_TrialComplete = false(goDataSize); 
 stop_TrialComplete = false(stopDataSize);
 
-go_TrialCounts = zeros(max([mergeSummary.subjectNumber]), max([mergeSummary.sessionNumber]));
-stop_TrialCounts = zeros(max([mergeSummary.subjectNumber]), max([mergeSummary.sessionNumber]));
+go_TrialCounts = zeros(numel(subjectRows), numel(sessionColumns));
+stop_TrialCounts = zeros(numel(subjectRows), numel(sessionColumns));
 
 % Second pass - this time, load the data into the arrays
-for i = 1:numel(filenames)
-    filename = filenames{i};
-    load([directory '/' filename]);
-    disp(filename);
+for i = 1:numel(mergeSummary)
+    filename = mergeSummary(i).filename;
+    load([directory '/' filename], 'subjectNumber', 'sessionNumber', 'subjectHandedness', 'trials');
     
-    go_TrialCounts(subjectNumber, sessionNumber) = mergeSummary(i).goTrialCount;
-    stop_TrialCounts(subjectNumber, sessionNumber) = mergeSummary(i).stopTrialCount;
+    subjectRow = mergeSummary(i).subjectRow;
+    sessionColumn = mergeSummary(i).sessionColumn;
+    
+    go_TrialCounts(subjectRow, sessionColumn) = mergeSummary(i).goTrialCount;
+    stop_TrialCounts(subjectRow, sessionColumn) = mergeSummary(i).stopTrialCount;
     
     % Find indexes of all go and stop trials in each session
     goTrialInds = strcmpi({trials.Procedure}, 'StGTrial');
@@ -119,43 +133,40 @@ for i = 1:numel(filenames)
     % Error check
     assert(isequal(goTrialInds, ~stopTrialInds), 'Check Procedure names in "trials" in session files, also check merge script code');
     
-    go_Stimulus(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = {trials(goTrialInds).Stimulus};
-    go_CorrectAnswer(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).CorrectAnswer];
-    go_Answer(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).Answer];
-    go_Correct(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).Correct];
-    go_GoRT(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoRT];
-    go_GoSignalOnsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOnsetTimestamp];
-    go_GoSignalOffsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOffsetTimestamp];
-    go_ResponseTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).ResponseTimestamp];
+    go_Stimulus(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = {trials(goTrialInds).Stimulus};
+    go_CorrectAnswer(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).CorrectAnswer];
+    go_Answer(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).Answer];
+    go_Correct(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).Correct];
+    go_GoRT(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoRT];
+    go_GoSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOnsetTimestamp];
+    go_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOffsetTimestamp];
+    go_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).ResponseTimestamp];
     
-    stop_Stimulus(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = {trials(stopTrialInds).Stimulus};
-    stop_CorrectAnswer(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).CorrectAnswer];
-    stop_Answer(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).Answer];
-    stop_Correct(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).Correct];
-    stop_GoRT(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoRT];
-    stop_GoSignalOnsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOnsetTimestamp];
-    stop_GoSignalOffsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOffsetTimestamp];
-    stop_ResponseTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).ResponseTimestamp];
+    stop_Stimulus(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = {trials(stopTrialInds).Stimulus};
+    stop_CorrectAnswer(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).CorrectAnswer];
+    stop_Answer(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).Answer];
+    stop_Correct(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).Correct];
+    stop_GoRT(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoRT];
+    stop_GoSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOnsetTimestamp];
+    stop_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOffsetTimestamp];
+    stop_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).ResponseTimestamp];
     % The following are only present for stop_, not go_
-    stop_SSD_intended(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_intended];
-    stop_SSD_actual(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_actual];
-    stop_StopSignalOnsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOnsetTimestamp];
-    stop_StopSignalOffsetTimestamp(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOffsetTimestamp];
+    stop_SSD_intended(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_intended];
+    stop_SSD_actual(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_actual];
+    stop_StopSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOnsetTimestamp];
+    stop_StopSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOffsetTimestamp];
     
-    go_TrialComplete(subjectNumber, sessionNumber, 1:mergeSummary(i).goTrialCount) = ~isnan([trials(goTrialInds).Answer]);
-    stop_TrialComplete(subjectNumber, sessionNumber, 1:mergeSummary(i).stopTrialCount) = ~isnan([trials(stopTrialInds).Answer]);
+    go_TrialComplete(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = ~isnan([trials(goTrialInds).Answer]);
+    stop_TrialComplete(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = ~isnan([trials(stopTrialInds).Answer]);
     
 end
 
-% Only save the results of the merge if this is not part of a software test
-if ~exist('testing', 'var')
-    save(['merged_' num2str(numel(unique([mergeSummary.subjectNumber]))) 'subjects']);
-else
-    if testing == false
-        save(['merged_' num2str(numel(unique([mergeSummary.subjectNumber]))) 'subjects']);
-    end
-end
-
-clear trials settings subjectNumber sessionNumber subjectHandedness;
+clear trials settings subjectNumber sessionNumber subjectRow sessionColumn subjectHandedness;
 clear i directory dir_results filenames filename testing;
 clear goDataSize stopDataSize goTrialInds stopTrialInds;
+
+% Save the results
+save(['merged_' num2str(numel(unique([mergeSummary.subjectNumber]))) 'subjects']);
+filename = ['merged_' num2str(numel(unique([mergeSummary.subjectNumber]))) 'subjects.mat'];
+
+end

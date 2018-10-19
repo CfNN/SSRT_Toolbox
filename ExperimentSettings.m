@@ -17,13 +17,6 @@ settings.UseMRITrigger = false;
 % "Blank" screen during the experiment. To hide metrics, set to "false"
 settings.DisplayPerfMetrics = false;
 
-% Initial stop signal delay (SSD) times for staircases 1 and 2. Naming
-% convention from E-Prime experiment used. Note that these are temporary
-% variables that will NOT change during the experiment (runningVals.ssd1
-% and runningVals.ssd2 are used instead). 
-settings.ssd_staircase1_initial = 0.200; % seconds. Typically 0.200
-settings.ssd_staircase2_initial = 0.300; % seconds. Typically 0.300
-
 % The stop signal delay (SSD) changes +/- between trials by this amount of
 % time (staircase procedure)
 settings.delta_t_initial = 0.050; % seconds

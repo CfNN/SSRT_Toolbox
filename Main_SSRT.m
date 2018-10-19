@@ -28,7 +28,7 @@ sessionStartDateTime = datevec(now);
 runningVals.GetSecsStart = GetSecs;
 
 % Use dialog boxes to get subject number, session number, etc. from the experimenter
-[subjectNumber, sessionNumber, subjectHandedness, cancelled] = GetSessionConfig();
+[subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(runningVals);
 if (cancelled)
     disp('Session cancelled by experimenter');
     return; % Stops this script from running to end the experiment session
@@ -86,8 +86,8 @@ clear ui filename;
 % Display SSD values from the end of the session (can be entered into
 % ExperimentSettings.m to start the next session with these values):
 ssdMsg = {'Stop-signal delays for the two staircases at the end of the session were as follows:',...
-       ['runningVals.ssd1 = ' num2str(runningVals.ssd1) ' s'],...
-       ['runningVals.ssd2 = ' num2str(runningVals.ssd2) ' s']};
+       ['SSD 1 = ' num2str(runningVals.ssd1) ' s'],...
+       ['SSD 2 = ' num2str(runningVals.ssd2) ' s']};
 msgbox(ssdMsg);
 for i = 1:length(ssdMsg)
     disp(ssdMsg{i});

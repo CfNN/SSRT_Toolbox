@@ -1,4 +1,4 @@
-function [subjectNumber, sessionNumber, subjectHandedness, cancelled] = GetSessionConfig() 
+function [subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(runningVals) 
 % GETSESSIONCONFIG - use dialog boxes to get the subject and session
 % number, and whether the subject is right or left handed, from the
 % experimenter.
@@ -61,7 +61,45 @@ while ~confirmed
         subjectHandedness = answer;
     end
     
-    msg = {['Subject Number: ' num2str(subjectNumber)], ['Session Number: ' num2str(sessionNumber)], ['Handedness: ' subjectHandedness], '', 'Continue with the above startup info?'};
+    num_entered = false;
+    while (~num_entered)
+        answer = inputdlg('Please enter the starting stop-signal delay (SSD) in seconds for staircase 1:', 'SSD', [1 40], {'0.200'});
+        if isempty(answer)
+            subjectNumber = NaN;
+            sessionNumber = NaN;
+            subjectHandedness = 'NA_CANCELLED';
+            cancelled = true;
+            return;
+        else
+            [num, num_entered] = str2num(char(answer)); % Convert string to number, make sure it was actually a number
+            if ~num_entered
+                waitfor(msgbox('Please enter a number for the SSD'));
+            else
+                runningVals.ssd1 = num;
+            end
+        end
+    end
+    
+    num_entered = false;
+    while (~num_entered)
+        answer = inputdlg('Please enter the starting stop-signal delay (SSD) in seconds for staircase 2:', 'SSD', [1 40], {'0.300'});
+        if isempty(answer)
+            subjectNumber = NaN;
+            sessionNumber = NaN;
+            subjectHandedness = 'NA_CANCELLED';
+            cancelled = true;
+            return;
+        else
+            [num, num_entered] = str2num(char(answer)); % Convert string to number, make sure it was actually a number
+            if ~num_entered
+                waitfor(msgbox('Please enter a number for the SSD'));
+            else
+                runningVals.ssd2 = num;
+            end
+        end
+    end
+    
+    msg = {['Subject Number: ' num2str(subjectNumber)], ['Session Number: ' num2str(sessionNumber)], ['Handedness: ' subjectHandedness], ['SSD 1: ' num2str(runningVals.ssd1) ' s'], ['SSD 2: ' num2str(runningVals.ssd2) ' s'], '', 'Continue with the above startup info?'};
     
     answer = questdlg(msg, 'Confirmation', 'Yes', 'No', 'Cancel', 'Yes');
     if strcmpi(answer, 'Yes')

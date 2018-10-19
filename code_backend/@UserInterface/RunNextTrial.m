@@ -29,6 +29,9 @@ keyMap = containers.Map;
 keyMap('LeftArrow') = 1;
 keyMap('RightArrow') = 2;
 
+% Enter fixation duration in trials struct
+trials(runningVals.currentTrial).FixationDur = runningVals.FixationDur;
+
 if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
     
     % Proceed as go trial

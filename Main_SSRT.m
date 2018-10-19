@@ -53,7 +53,8 @@ ui.ShowFixation(0.5, runningVals);
 % Loop through the trials structure (note - runningVals.currentTrial keeps
 % track of which trial you are on)
 while (runningVals.currentTrial <= length(trials))
-    % Show the fixation cross
+    % Show variable duration fixation cross 
+    runningVals.FixationDur = random(truncate(makedist('Exponential',1),0.4,3.9),1);
     ui.ShowFixation(settings.FixationDur, runningVals);
     
     % Run the go or stop trial (depending on what is in this row of the

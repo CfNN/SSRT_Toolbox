@@ -1,4 +1,4 @@
-function ShowFixation(obj, duration, runningVals)
+function trials = ShowFixation(obj, duration, runningVals, trials)
 % SHOWFIXATION shows a fixation cross for the specified duration.
 %   Eg. ShowFixation(2.4) displays fixation cross for 2400 milliseconds. 
 
@@ -10,8 +10,10 @@ DrawFormattedText(obj.window,'+','center','center',obj.c_white);
 
 obj.DrawPerformanceMetrics(runningVals);
 
-Screen('Flip',obj.window);
+[~, trials(runningVals.currentTrial).FixationOnsetTimestamp, ~, ~, ~] = Screen('Flip',obj.window);
 
 WaitSecs(duration);
+
+[~, trials(runningVals.currentTrial).FixationOffsetTimestamp, ~, ~, ~] = Screen('Flip',obj.window);
 
 end

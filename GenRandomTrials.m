@@ -65,6 +65,10 @@ for i = 1:n_trials
     trials(i).StopSignalOnsetTimestamp = NaN;
     trials(i).StopSignalOffsetTimestamp = NaN;
     trials(i).ResponseTimestamp = NaN;
+    trials(i).FixationOnsetTimestamp = NaN;
+    trials(i).FixationOffsetTimestamp = NaN;
+    trials(i).BlankOnsetTimestamp = NaN;
+    trials(i).BlankOffsetTimestamp = NaN;
 end
 
 possibleStopTrialPos = n_enforcedInitialGoTrials+1:n_trials;

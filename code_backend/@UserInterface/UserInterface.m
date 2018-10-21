@@ -170,11 +170,9 @@ classdef UserInterface < handle
         
         TriggerTimestamp = ShowReadyTrigger(obj);
         
-        ShowFixation(obj, duration, runningVals);
+        trials = ShowFixation(obj, duration, runningVals, trials);
         
-        ShowBlank(obj, duration, runningVals);
-        
-        RunTrial(obj, StopGo, arrowDirection, trialLength, varargin);
+        trials = ShowBlank(obj, duration, runningVals, trials);
         
         [trials, runningVals] = RunNextTrial(obj, trials, settings, runningVals);
         

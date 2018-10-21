@@ -89,6 +89,10 @@ go_GoRT = nan(goDataSize);
 go_GoSignalOnsetTimestamp = nan(goDataSize);
 go_GoSignalOffsetTimestamp = nan(goDataSize);
 go_ResponseTimestamp = nan(goDataSize);
+go_FixationOnsetTimestamp = nan(goDataSize);
+go_FixationOffsetTimestamp = nan(goDataSize);
+go_BlankOnsetTimestamp = nan(goDataSize);
+go_BlankOffsetTimestamp = nan(goDataSize);
 
 stop_Stimulus = cell(stopDataSize);
 stop_CorrectAnswer = nan(stopDataSize);
@@ -98,6 +102,10 @@ stop_GoRT = nan(stopDataSize);
 stop_GoSignalOnsetTimestamp = nan(stopDataSize);
 stop_GoSignalOffsetTimestamp = nan(stopDataSize);
 stop_ResponseTimestamp = nan(stopDataSize);
+stop_FixationOnsetTimestamp = nan(goDataSize);
+stop_FixationOffsetTimestamp = nan(goDataSize);
+stop_BlankOnsetTimestamp = nan(goDataSize);
+stop_BlankOffsetTimestamp = nan(goDataSize);
 % The following are only present for stop_, not go_
 stop_SSD_intended = nan(stopDataSize);
 stop_SSD_actual = nan(stopDataSize);
@@ -142,6 +150,14 @@ for i = 1:numel(mergeSummary)
     go_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOffsetTimestamp];
     go_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).ResponseTimestamp];
     
+    % if statement needed for compatibility with automated software test
+    if isfield(trials, 'FixationOnsetTimestamp')
+        go_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).FixationOnsetTimestamp];
+        go_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).FixationOffsetTimestamp];
+        go_BlankOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).BlankOnsetTimestamp];
+        go_BlankOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).BlankOffsetTimestamp];
+    end
+    
     stop_Stimulus(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = {trials(stopTrialInds).Stimulus};
     stop_CorrectAnswer(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).CorrectAnswer];
     stop_Answer(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).Answer];
@@ -150,6 +166,15 @@ for i = 1:numel(mergeSummary)
     stop_GoSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOnsetTimestamp];
     stop_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOffsetTimestamp];
     stop_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).ResponseTimestamp];
+    
+    % if statement needed for compatibility with automated software test
+    if isfield(trials, 'FixationOnsetTimestamp')
+        stop_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).FixationOnsetTimestamp];
+        stop_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).FixationOffsetTimestamp];
+        stop_BlankOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).BlankOnsetTimestamp];
+        stop_BlankOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).BlankOffsetTimestamp];
+    end
+    
     % The following are only present for stop_, not go_
     stop_SSD_intended(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_intended];
     stop_SSD_actual(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_actual];

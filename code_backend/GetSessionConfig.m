@@ -1,4 +1,4 @@
-function [subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(runningVals) 
+function [subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(settings, runningVals) 
 % GETSESSIONCONFIG - use dialog boxes to get the subject and session
 % number, and whether the subject is right or left handed, from the
 % experimenter.
@@ -115,8 +115,8 @@ while ~confirmed
     if strcmpi(answer, 'Yes')
         % Check if a .mat file with these participant and subject numbers
         % exists already - if it does, issue a warning that the data will be overwritten
-        filename = ['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '.mat'];
-        autosave_filename = ['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_AUTOSAVE.mat'];
+        filename = ['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '.mat'];
+        autosave_filename = ['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat'];
         if exist(filename, 'file') == 2 || exist(autosave_filename, 'file')
             confirmed = false;
             

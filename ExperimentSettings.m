@@ -17,6 +17,20 @@ settings.UseMRITrigger = false;
 % "Blank" screen during the experiment. To hide metrics, set to "false"
 settings.DisplayPerfMetrics = false;
 
+% Set to "true" to use a variable fixation cross duration, chosen for each
+% trial from a truncated exponential distribution. Set to "false" to use a
+% constant fixation duration, specified below as settings.FixationDur
+settings.VariableFixationDur = true;
+% Parameters for fixation duration distribution (truncated exponential):
+% NOT APPLICABLE if settings.VariableFixationDur is set to false
+settings.FixDurMean = 1; % seconds
+settings.FixDurMin = 0.4; % seconds
+settings.FixDurMax = 3.9; % seconds
+
+% Constant duration of fixation before each trial
+% NOT APPLICABLE if settings.VariableFixationDur is set to true
+settings.FixationDur = 0.5; % seconds
+
 % The stop signal delay (SSD) changes +/- between trials by this amount of
 % time (staircase procedure)
 settings.delta_t_initial = 0.050; % seconds
@@ -41,12 +55,23 @@ settings.BeepFreq = 500; %Hz
 % Total trial duration. g_TrialDur in E-Prime version.
 settings.TrialDur = 1.0; % seconds
 
-% Duration of fixation before each trial
-settings.FixationDur = 0.5; % seconds
-
 % Duration of blank screen after each trial
 settings.BlankDur = 0.100; % seconds
 
 % Size of arrow graphics (arbitrary units). Make larger/smaller to change
 % size of the arrows displayed during trials. 
 settings.ArrowSize = 10; % 10 is a good starting point
+
+% CLEANUP (removing redundant and confusing settings variables)
+
+if settings.VariableFixationDur
+    % Remove constant fixation duration setting if a variable fixation
+    % duration has been indicated
+    settings = rmfield(settings,'FixationDur');
+else
+    % If variable fixation duration has not been indicated, remove settings
+    % for fixation duration distribution parameters
+    settings = rmfield(settings, 'FixDurMean');
+    settings = rmfield(settings, 'FixDurMin');
+    settings = rmfield(settings, 'FixDurMax');
+end

@@ -28,7 +28,7 @@ sessionStartDateTime = datevec(now);
 runningVals.GetSecsStart = GetSecs;
 
 % Use dialog boxes to get subject number, session number, etc. from the experimenter
-[subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(runningVals);
+[subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(settings, runningVals);
 if (cancelled)
     disp('Session cancelled by experimenter');
     return; % Stops this script from running to end the experiment session
@@ -53,9 +53,18 @@ ui.ShowFixation(0.5, runningVals);
 % Loop through the trials structure (note - runningVals.currentTrial keeps
 % track of which trial you are on)
 while (runningVals.currentTrial <= length(trials))
-    % Show variable duration fixation cross 
-    runningVals.FixationDur = random(truncate(makedist('Exponential',1),0.4,3.9),1);
-    ui.ShowFixation(settings.FixationDur, runningVals);
+    
+    if settings.VariableFixationDur
+        % Use variable duration fixation cross
+        fixationDur = random(truncate(makedist('Exponential',settings.FixDurMean),settings.FixDurMin,settings.FixDurMax));
+    else
+        % Use fixed duration fixation cross
+        fixationDur = settings.FixationDur;
+    end
+    
+    % Show fixation cross (constant or variable duration set above
+    % according to ExperimentSettings.m
+    trials = ui.ShowFixation(fixationDur, runningVals, trials);
     
     % Run the go or stop trial (depending on what is in this row of the
     % trial struct)
@@ -66,10 +75,13 @@ while (runningVals.currentTrial <= length(trials))
     runningVals = UpdateLivePerfMetrics(runningVals);
     
     % Show a blank screen
-    ui.ShowBlank(settings.BlankDur, runningVals);
+    trials = ui.ShowBlank(settings.BlankDur, runningVals, trials);
     
     % Autosave data in case the experiment is interrupted partway through
     save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness');
+    
+    % Advance iterator to next trial
+    runningVals.currentTrial = runningVals.currentTrial + 1;
 end
 
 % Clear the screen

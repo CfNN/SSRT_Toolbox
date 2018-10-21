@@ -29,9 +29,6 @@ keyMap = containers.Map;
 keyMap('LeftArrow') = 1;
 keyMap('RightArrow') = 2;
 
-% Enter fixation duration in trials struct
-trials(runningVals.currentTrial).FixationDur = runningVals.FixationDur;
-
 if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
     
     % Proceed as go trial
@@ -210,8 +207,5 @@ end
 
 % Re-enable all keys (restricted during trial)
 RestrictKeysForKbCheck([]);
-
-% Advance iterator to next trial
-runningVals.currentTrial = runningVals.currentTrial + 1;
 
 end

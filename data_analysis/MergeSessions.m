@@ -150,7 +150,7 @@ for i = 1:numel(mergeSummary)
     go_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOffsetTimestamp];
     go_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).ResponseTimestamp];
     
-    % if statement needed for compatibility with automated software test
+    % if statement needed for compatibility with E-Prime and automated software test
     if isfield(trials, 'FixationOnsetTimestamp')
         go_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).FixationOnsetTimestamp];
         go_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).FixationOffsetTimestamp];
@@ -167,7 +167,7 @@ for i = 1:numel(mergeSummary)
     stop_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOffsetTimestamp];
     stop_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).ResponseTimestamp];
     
-    % if statement needed for compatibility with automated software test
+    % if statement needed for compatibility with E-Prime and automated software test
     if isfield(trials, 'FixationOnsetTimestamp')
         stop_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).FixationOnsetTimestamp];
         stop_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).FixationOffsetTimestamp];

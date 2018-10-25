@@ -1,3 +1,7 @@
+% Set the current MATLAB folder to the folder where this script is stored
+disp('Changing the current MATLAB folder to the location of this script');
+cd(fileparts(which(mfilename)));
+
 try
     disp(['Psychtoolbox install directory: ' PsychtoolboxRoot]);
 catch
@@ -24,10 +28,3 @@ if ~exist('eprime_conversion/session_files_output', 'dir')
 else
     warning('eprime_conversion/session_files_output directory already exists');
 end
-
-% Make sure the code files in /code_backend and other directories are accessible to MATLAB
-disp('Adding code directories to MATLAB search path...');
-addpath('./code_backend/');
-addpath('./data_analysis/');
-addpath('./software_tests/');
-disp('Finished adding code directories to MATLAB search path');

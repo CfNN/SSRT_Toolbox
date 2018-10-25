@@ -6,6 +6,17 @@ close all;
 clear;
 sca;
 
+% Set the current MATLAB folder to the folder where this script is stored
+disp('Changing the current MATLAB folder to the location of this script');
+cd(fileparts(which(mfilename)));
+
+% Make sure the code files in /code_backend and other directories are accessible to MATLAB
+disp('Adding code directories to MATLAB search path...');
+addpath('./code_backend/');
+addpath('./data_analysis/');
+addpath('./software_tests/');
+disp('Finished adding code directories to MATLAB search path');
+
 try
     % Contains the pre-generated "trials" struct array
     load('CURRENTTRIALS.mat', 'trials');

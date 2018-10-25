@@ -7,6 +7,10 @@
 % Inhibition" by Congdon et al. (2012), Frontiers in Psychology. 
 % Run this script after running MergeSessions.m.
 
+% Set the current MATLAB folder to the folder where this script is stored
+disp('Changing the current MATLAB folder to the location of this script');
+cd(fileparts(which(mfilename)));
+
 % Check that an appropriate dataset is loaded
 if ~exist('go_ResponseTimestamp', 'var') || ~exist('go_TrialCounts', 'var') || ~exist('go_GoRT', 'var')
     error('Please load a dataset created using MergeSessions.m into the MATLAB workspace. You can do this by double-clicking an existing merged dataset file after running MergeSessions.m (it might be called something like ''merged_3subjects.mat'')');

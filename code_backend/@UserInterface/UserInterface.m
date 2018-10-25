@@ -174,7 +174,7 @@ classdef UserInterface < handle
         
         trials = ShowBlank(obj, duration, runningVals, trials);
         
-        [trials, runningVals] = RunNextTrial(obj, trials, settings, runningVals);
+        [trials, runningVals, quitKeyPressed] = RunNextTrial(obj, trials, settings, runningVals);
         
     end
     

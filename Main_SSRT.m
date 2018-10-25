@@ -7,7 +7,7 @@ clear;
 sca;
 
 % Set the current MATLAB folder to the folder where this script is stored
-disp('Changing the current MATLAB folder to the location of this script');
+disp('Setting the current MATLAB folder to the location of this script');
 cd(fileparts(which(mfilename)));
 
 % Make sure the code files in /code_backend and other directories are accessible to MATLAB
@@ -79,7 +79,16 @@ while (runningVals.currentTrial <= length(trials))
     
     % Run the go or stop trial (depending on what is in this row of the
     % trial struct)
-    [trials, runningVals] = ui.RunNextTrial(trials, settings, runningVals);
+    [trials, runningVals, quitKeyPressed] = ui.RunNextTrial(trials, settings, runningVals);
+    
+    if quitKeyPressed
+        % Clear the screen and unneeded variables
+        sca;
+        PsychPortAudio('Close');
+        clear ui filename;
+        % Stop this script from running to end experiment session
+        return; 
+    end
     
     % Update the live performance metrics that are optionally displayed on
     % the screen (see ExperimentSettings.m to disable/enable)
@@ -95,14 +104,11 @@ while (runningVals.currentTrial <= length(trials))
     runningVals.currentTrial = runningVals.currentTrial + 1;
 end
 
-% Clear the screen
-sca;
-
 % Save the data to a .mat, delete autosaved version
 save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness');
 delete(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat']);
 
-% Clear unneeded variables. Experiment session ends after these lines. 
+% Clear the screen and unneeded variables.
 sca;
 PsychPortAudio('Close');
 clear ui filename;

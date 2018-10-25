@@ -1,7 +1,7 @@
 clear;
 
 % Set the current MATLAB folder to the folder where this script is stored
-disp('Changing the current MATLAB folder to the location of this script');
+disp('Setting the current MATLAB folder to the location of this script');
 cd(fileparts(which(mfilename)));
 
 input_directory = 'eprime_input';

@@ -1,4 +1,4 @@
-function [trials, runningVals] = RunNextTrial(obj, trials, settings, runningVals)
+function [trials, runningVals, quitKeyPressed] = RunNextTrial(obj, trials, settings, runningVals)
 % RUNNEXTTRIAL - Run the next trial in the session, based on the current
 % trial number (runningVals.currentTrial) and the data in the 'trials'
 % struct array. Returns updated copies of 'trials' and 'runningVals'. This
@@ -7,6 +7,10 @@ function [trials, runningVals] = RunNextTrial(obj, trials, settings, runningVals
 %
 % Usage: [trials, runningVals] = RunNextTrial(trials, runningVals);
 % -------------------
+
+% If the escape or q key is pressed, this will be set to true and passed as 
+% such to the Main_SSRT script, which will then end the experiment session. 
+quitKeyPressed = false;
 
 if strcmpi(trials(runningVals.currentTrial).Stimulus, 'Right_Arrow.bmp')
     go_img = obj.arrow_tex_right;
@@ -22,7 +26,7 @@ obj.DrawPerformanceMetrics(runningVals);
 trials(runningVals.currentTrial).GoSignalOnsetTimestamp = tGoStimOn;
 
 % Specify allowable key names, restrict input to these
-activeKeys = [KbName('LeftArrow') KbName('RightArrow')];
+activeKeys = [KbName('LeftArrow') KbName('RightArrow') KbName('Escape') KbName('q')];
 RestrictKeysForKbCheck(activeKeys);
 
 keyMap = containers.Map;
@@ -43,6 +47,12 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
         
         % Record RT and keycode data, and break loop, if key pressed
         if (keyIsDown)
+            
+            if strcmpi(KbName(keyCode), 'q') || strcmpi(KbName(keyCode), 'escape')
+                quitKeyPressed = true;
+                return;
+            end
+            
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
             trials(runningVals.currentTrial).GoRT = keyTime - tGoStimOn;
             runningVals.LastGoRT = keyTime - tGoStimOn; % For live performance metrics
@@ -94,6 +104,12 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         [ keyIsDown, keyTime, keyCode ] = KbCheck; % keyTime is from an internal call to GetSecs
         
         if keyIsDown
+            
+            if strcmpi(KbName(keyCode), 'q') || strcmpi(KbName(keyCode), 'escape')
+                quitKeyPressed = true;
+                return;
+            end
+            
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
             if stopSignalStarted
                 [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);

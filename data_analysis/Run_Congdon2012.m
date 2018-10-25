@@ -9,7 +9,7 @@
 
 % Check that an appropriate dataset is loaded
 if ~exist('go_ResponseTimestamp', 'var') || ~exist('go_TrialCounts', 'var') || ~exist('go_GoRT', 'var')
-    error('Please load a dataset created using MergeSessions.m into the MATLAB workspace. You can do this by running MergeSessions.m, or by double-clicking an existing merged dataset file (might be called something like ''merged_3subjects.mat'')');
+    error('Please load a dataset created using MergeSessions.m into the MATLAB workspace. You can do this by double-clicking an existing merged dataset file after running MergeSessions.m (it might be called something like ''merged_3subjects.mat'')');
 end
     
 confirmed = false;

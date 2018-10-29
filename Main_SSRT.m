@@ -11,11 +11,10 @@ disp('Setting the current MATLAB folder to the location of this script');
 cd(fileparts(which(mfilename)));
 
 % Make sure the code files in /code_backend and other directories are accessible to MATLAB
-disp('Adding code directories to MATLAB search path...');
+disp('Adding code directories to MATLAB search path');
 addpath('./code_backend/');
 addpath('./data_analysis/');
 addpath('./software_tests/');
-disp('Finished adding code directories to MATLAB search path');
 
 try
     % Contains the pre-generated "trials" struct array
@@ -32,11 +31,7 @@ ExperimentSettings;
 % Set up running values that change during the experiment session (live 
 % performance metrics, two changing stop-signal delays associated with the 
 % two staircases) 
-InitRunningVals;   
-
-% Timestamps for beginning of experiment
-sessionStartDateTime = datevec(now);
-runningVals.GetSecsStart = GetSecs;
+InitRunningVals;
 
 % Use dialog boxes to get subject number, session number, etc. from the experimenter
 [subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(settings, runningVals);
@@ -55,7 +50,11 @@ ui.ShowInstructions();
 % Use the ui to show the "ready" screen with a timer, and wait for the MRI
 % trigger (or a key press, depending on what is specified in
 % ExperimentSettings.m)
-triggerTimestamp = ui.ShowReadyTrigger();
+% IMPORTANT: sessionStartDateTime is not exactly the same as
+% triggerTimestamp, there is be a (tiny) time difference between when
+% the two are recorded! For this reason, always use triggerTimestamp for 
+% important calculations if possible. 
+[triggerTimestamp, sessionStartDateTime] = ui.ShowReadyTrigger();
 
 % Use the ui to show a fixation cross for the specified amount of time in
 % seconds

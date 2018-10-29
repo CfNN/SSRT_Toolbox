@@ -50,7 +50,7 @@ meanCorrectGoRT = nanmean([trials(strcmpi({trials.Procedure}, 'StGTrial') & [tri
 plot([trials(strcmpi({trials.Procedure}, 'StGTrial')).GoRT], 'LineWidth', 3);
 title({'Go trial reaction times', ['Mean GoRT = ' num2str(meanGoRT) ' s'], ['Mean GoRT (correct responses only) = ' num2str(meanCorrectGoRT) ' s']});
 ylabel('Reaction time (s)');
-xlabel('Go trial number');
+xlabel('Go trial index');
 
 % Draw vertical lines representing start of new experiment sessions
 if length(goTrialsPerFile) > 1
@@ -85,7 +85,7 @@ plot(st2markers, [trials(strcmpi({trials.Procedure}, 'StITrial2')).SSD_actual], 
 plot([trials(~isnan([trials.SSD_actual])).SSD_actual]);
 title('Stop signal delay (SSD)');
 ylabel('SSD');
-xlabel('Stop trial number');
+xlabel('Stop trial index');
 legend({'Staircase 1 (StITrial)', 'Staircase 2 (StITrial2)', 'Both staircases'});
 
 % Draw vertical lines representing start of new experiment sessions

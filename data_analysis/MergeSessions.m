@@ -26,16 +26,7 @@ assert(numel(filenames) > 0, ['No files found in ' directory]);
 % Contains the subject number, session number, handedness, number of go and
 % stop trials in each file. Note that ordering depends on the names of the
 % files, and not necessarily on subject/session numbers in a logical way. 
-mergeSummary(numel(filenames)) = struct('filename', [], 'subjectNumber', [], 'sessionNumber', [], 'subjectHandedness', [], 'goTrialCount', [], 'stopTrialCount', []);
-
-% It is necessary to keep track of how many trials each participant
-% completed in each section. Otherwise, it is tricky to make sure that
-% missing trials aren't affecting calculations related to the number of
-% trials completed (eg. proportion of correct stop trials). Index using
-% [subjectNumber, sessionNumber]. 
-% % Initialize properly after first pass through data file
-go_TrialCounts = []; %#ok<NASGU> 
-stop_TrialCounts = []; %#ok<NASGU>
+mergeSummary(numel(filenames)) = struct('filename', [], 'subjectNumber', [], 'sessionNumber', [], 'subjectHandedness', [], 'totalGoTrialCount', [], 'totalStopTrialCount', []);
 
 % First pass through the files, checking for duplicates, checking how many
 % unique subject numbers there are, establishing the size of the output 
@@ -59,13 +50,16 @@ for i = 1:numel(filenames)
     end
     clear j;
     
-    % Count the number of go trials
-    mergeSummary(i).goTrialCount = nnz(strcmpi({trials.Procedure}, 'StGTrial'));
-    % Count the number of stop trials
-    mergeSummary(i).stopTrialCount = nnz(strcmpi({trials.Procedure}, 'StITrial')) + nnz(strcmpi({trials.Procedure}, 'StITrial2'));
+    % Count the total number of go trials (including any that were 'set up' in 
+    % the 'trials' struct but not completed)
+    mergeSummary(i).totalGoTrialCount = nnz(strcmpi({trials.Procedure}, 'StGTrial'));
+    
+    % Count the number of stop trials (including any that were 'set up' in 
+    % the 'trials' struct but not completed)
+    mergeSummary(i).totalStopTrialCount = nnz(strcmpi({trials.Procedure}, 'StITrial')) + nnz(strcmpi({trials.Procedure}, 'StITrial2'));
     
     % Make sure all trials have been counted as either stop or go trials
-    assert(mergeSummary(i).goTrialCount + mergeSummary(i).stopTrialCount == numel({trials.Procedure}), 'Check procedure names in ''trials'' struct array and/or code for counting stop/go trials in data merge script');
+    assert(mergeSummary(i).totalGoTrialCount + mergeSummary(i).totalStopTrialCount == numel({trials.Procedure}), 'Check procedure names in ''trials'' struct array and/or code for counting stop/go trials in data merge script');
     
 end
 
@@ -77,8 +71,8 @@ for i = 1:numel(mergeSummary)
     mergeSummary(i).sessionColumn = find(sessionColumns == mergeSummary(i).sessionNumber);
 end
 
-goDataSize = [numel(subjectRows), numel(sessionColumns), max([mergeSummary.goTrialCount])];
-stopDataSize = [numel(subjectRows), numel(sessionColumns), max([mergeSummary.stopTrialCount])];
+goDataSize = [numel(subjectRows), numel(sessionColumns), max([mergeSummary.totalGoTrialCount])];
+stopDataSize = [numel(subjectRows), numel(sessionColumns), max([mergeSummary.totalStopTrialCount])];
 
 % Initialize 3D matrices (of numbers) or cell arrays (of strings) for each measure
 go_Stimulus = cell(goDataSize);
@@ -121,6 +115,11 @@ stop_StopSignalOffsetTimestamp = nan(stopDataSize);
 go_TrialComplete = false(goDataSize); 
 stop_TrialComplete = false(stopDataSize);
 
+% It is necessary to keep track of how many trials each participant
+% completed in each section. Otherwise, it is tricky to make sure that
+% missing trials aren't affecting calculations related to the number of
+% trials completed (eg. proportion of correct stop trials). Index using
+% [subjectNumber, sessionNumber]. 
 go_TrialCounts = zeros(numel(subjectRows), numel(sessionColumns));
 stop_TrialCounts = zeros(numel(subjectRows), numel(sessionColumns));
 
@@ -132,57 +131,57 @@ for i = 1:numel(mergeSummary)
     subjectRow = mergeSummary(i).subjectRow;
     sessionColumn = mergeSummary(i).sessionColumn;
     
-    go_TrialCounts(subjectRow, sessionColumn) = mergeSummary(i).goTrialCount;
-    stop_TrialCounts(subjectRow, sessionColumn) = mergeSummary(i).stopTrialCount;
-    
     % Find indexes of all go and stop trials in each session
     goTrialInds = strcmpi({trials.Procedure}, 'StGTrial');
     stopTrialInds = logical(strcmpi({trials.Procedure}, 'StITrial') + strcmpi({trials.Procedure}, 'StITrial2'));
     % Error check
     assert(isequal(goTrialInds, ~stopTrialInds), 'Check Procedure names in "trials" in session files, also check merge script code');
     
-    go_Stimulus(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = {trials(goTrialInds).Stimulus};
-    go_CorrectAnswer(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).CorrectAnswer];
-    go_Answer(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).Answer];
-    go_Correct(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).Correct];
-    go_GoRT(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoRT];
-    go_GoSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOnsetTimestamp];
-    go_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).GoSignalOffsetTimestamp];
-    go_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).ResponseTimestamp];
+    go_TrialCounts(subjectRow, sessionColumn) = nnz(strcmpi({trials.Procedure}, 'StGTrial') & ~isnan([trials.Answer]));
+    stop_TrialCounts(subjectRow, sessionColumn) = nnz(strcmpi({trials.Procedure}, 'StITrial') & ~isnan([trials.Answer])) + nnz(strcmpi({trials.Procedure}, 'StITrial2') & ~isnan([trials.Answer]));
+    
+    go_Stimulus(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = {trials(goTrialInds).Stimulus};
+    go_CorrectAnswer(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).CorrectAnswer];
+    go_Answer(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).Answer];
+    go_Correct(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).Correct];
+    go_GoRT(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).GoRT];
+    go_GoSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).GoSignalOnsetTimestamp];
+    go_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).GoSignalOffsetTimestamp];
+    go_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).ResponseTimestamp];
     
     % if statement needed for compatibility with E-Prime and automated software test
     if isfield(trials, 'FixationOnsetTimestamp')
-        go_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).FixationOnsetTimestamp];
-        go_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).FixationOffsetTimestamp];
-        go_BlankOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).BlankOnsetTimestamp];
-        go_BlankOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = [trials(goTrialInds).BlankOffsetTimestamp];
+        go_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).FixationOnsetTimestamp];
+        go_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).FixationOffsetTimestamp];
+        go_BlankOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).BlankOnsetTimestamp];
+        go_BlankOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = [trials(goTrialInds).BlankOffsetTimestamp];
     end
     
-    stop_Stimulus(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = {trials(stopTrialInds).Stimulus};
-    stop_CorrectAnswer(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).CorrectAnswer];
-    stop_Answer(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).Answer];
-    stop_Correct(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).Correct];
-    stop_GoRT(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoRT];
-    stop_GoSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOnsetTimestamp];
-    stop_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).GoSignalOffsetTimestamp];
-    stop_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).ResponseTimestamp];
+    stop_Stimulus(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = {trials(stopTrialInds).Stimulus};
+    stop_CorrectAnswer(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).CorrectAnswer];
+    stop_Answer(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).Answer];
+    stop_Correct(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).Correct];
+    stop_GoRT(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).GoRT];
+    stop_GoSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).GoSignalOnsetTimestamp];
+    stop_GoSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).GoSignalOffsetTimestamp];
+    stop_ResponseTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).ResponseTimestamp];
     
     % if statement needed for compatibility with E-Prime and automated software test
     if isfield(trials, 'FixationOnsetTimestamp')
-        stop_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).FixationOnsetTimestamp];
-        stop_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).FixationOffsetTimestamp];
-        stop_BlankOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).BlankOnsetTimestamp];
-        stop_BlankOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).BlankOffsetTimestamp];
+        stop_FixationOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).FixationOnsetTimestamp];
+        stop_FixationOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).FixationOffsetTimestamp];
+        stop_BlankOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).BlankOnsetTimestamp];
+        stop_BlankOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).BlankOffsetTimestamp];
     end
     
     % The following are only present for stop_, not go_
-    stop_SSD_intended(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_intended];
-    stop_SSD_actual(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).SSD_actual];
-    stop_StopSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOnsetTimestamp];
-    stop_StopSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = [trials(stopTrialInds).StopSignalOffsetTimestamp];
+    stop_SSD_intended(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).SSD_intended];
+    stop_SSD_actual(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).SSD_actual];
+    stop_StopSignalOnsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).StopSignalOnsetTimestamp];
+    stop_StopSignalOffsetTimestamp(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = [trials(stopTrialInds).StopSignalOffsetTimestamp];
     
-    go_TrialComplete(subjectRow, sessionColumn, 1:mergeSummary(i).goTrialCount) = ~isnan([trials(goTrialInds).Answer]);
-    stop_TrialComplete(subjectRow, sessionColumn, 1:mergeSummary(i).stopTrialCount) = ~isnan([trials(stopTrialInds).Answer]);
+    go_TrialComplete(subjectRow, sessionColumn, 1:mergeSummary(i).totalGoTrialCount) = ~isnan([trials(goTrialInds).Answer]);
+    stop_TrialComplete(subjectRow, sessionColumn, 1:mergeSummary(i).totalStopTrialCount) = ~isnan([trials(stopTrialInds).Answer]);
     
 end
 

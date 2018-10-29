@@ -1,11 +1,15 @@
-function triggerTimestamp = ShowReadyTrigger(obj)
+function [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj)
 % SHOWREADYTRIGGER - Shows a 'ready' screen. The experiment can be
 % continued with a key press or an MRI trigger. A timer is included, which
 % allows the experimenter to check whether the MRI is starting up within a 
 % reasonable time frame.
 %
-% TriggerTimestamp: returns the results of a call to the GetSecs function
+% triggerTimestamp: returns the results of a call to the GetSecs function
 % at the precise moment when the trigger arrives (MRI trigger or key press)
+%
+% sessionStartDateTime: returns a vector containing the date and time when
+% the trigger arrived (as close as possible to the actual
+% triggerTimestamp, but not exactly the same). 
 %
 % See also SHOWINSTRUCTIONS
 
@@ -44,11 +48,11 @@ tStart = GetSecs;
 
 timedout = false;
     while ~timedout
-
+        
+        sessionStartDateTime = datevec(now);
         [ keyIsDown, keyTime, ~ ] = KbCheck(activeKeys); 
         if (keyIsDown)
             triggerTimestamp = keyTime;
-            assignin('base', 'TriggerTimestamp', keyTime); % Just in case
             break;
         end
         
@@ -64,7 +68,7 @@ timedout = false;
         
         prevTimer = timer;
         
-        % Uncomment these lines if you want to experiment to start without
+        % Uncomment these lines if you want to experiment to start automatically without
         % the trigger after a certain time (in seconds)
 %         if ((keyTime - tStart) > 300)
 %             timedout = true; 

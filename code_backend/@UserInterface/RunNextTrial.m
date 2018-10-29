@@ -111,10 +111,6 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
             end
             
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
-            if stopSignalStarted
-                [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
-                trials(runningVals.currentTrial).StopSignalOffsetTimestamp = stopSignalEndTime;
-            end
             break;
         end
         
@@ -137,7 +133,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
             stopSignalStarted = true;
         end
         
-        %Stop the stop signal if it has been presented long enough
+        % Stop the stop signal if it has been presented long enough
         if stopSignalOn
             if (keyTime - stopSignalStartTime) > obj.settings.StopSignalDur
                 
@@ -163,7 +159,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
     [~, goSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
     trials(runningVals.currentTrial).GoSignalOffsetTimestamp = goSignalEndTime;
     
-    if stopSignalOn && timedout % If the stop signal was still on when the trial timed out
+    if stopSignalOn % If the stop signal was still on when the trial ended
         if strcmpi(settings.StopSignalType, 'auditory')
             [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
             trials(runningVals.currentTrial).StopSignalOffsetTimestamp = stopSignalEndTime;

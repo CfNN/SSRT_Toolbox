@@ -168,7 +168,7 @@ classdef UserInterface < handle
         
         ShowInstructions(obj);
         
-        TriggerTimestamp = ShowReadyTrigger(obj);
+        [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj);
         
         trials = ShowFixation(obj, duration, runningVals, trials);
         

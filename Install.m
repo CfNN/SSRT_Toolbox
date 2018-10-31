@@ -1,3 +1,6 @@
+% Install.m checks that PsychToolbox is installed and creates directories 
+% needed for data analysis
+
 % Set the current MATLAB folder to the folder where this script is stored
 disp('Setting the current MATLAB folder to the location of this script');
 cd(fileparts(which(mfilename)));

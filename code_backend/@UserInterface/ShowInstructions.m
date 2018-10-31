@@ -1,7 +1,7 @@
 function ShowInstructions(obj)
 % SHOWINSTRUCTIONS - Show a series of introductory/instruction screens
 %   Usage: ShowInstructions();
-% See also SHOWREADYTIMER
+% See also SHOWREADYTRIGGER
 % -------------------
 
 % User can proceed by hitting any key. 

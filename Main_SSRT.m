@@ -103,14 +103,14 @@ while (runningVals.currentTrial <= length(trials))
     runningVals.currentTrial = runningVals.currentTrial + 1;
 end
 
-% Save the data to a .mat, delete autosaved version
-save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness');
-delete(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat']);
-
 % Clear the screen and unneeded variables.
 sca;
 PsychPortAudio('Close');
 clear ui filename;
+
+% Save the data to a .mat, delete autosaved version
+save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness');
+delete(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat']);
 
 % Display SSD values from the end of the session (can be entered into
 % ExperimentSettings.m to start the next session with these values):

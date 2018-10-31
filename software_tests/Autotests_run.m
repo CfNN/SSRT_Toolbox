@@ -1,3 +1,7 @@
+% Runs a battery of automated software tests. Currently, these are only
+% tests of the data analysis methods (none of the code for running the
+% experiment sessions is tested). 
+
 % Set the current MATLAB folder to the folder where this script is stored
 disp('Setting the current MATLAB folder to the location of this script');
 cd(fileparts(which(mfilename)));

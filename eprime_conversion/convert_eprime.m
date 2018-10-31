@@ -1,5 +1,8 @@
 function [trials, settings, subjectNumber, sessionNumber, sessionStartDateTime, triggerTimestamp] = convert_eprime(T, headervars)
-    
+% CONVERT_EPRIME - generates session file variables from a Table variable 
+% produced using eprimetxt2vars.m on a text file from an E-Prime experiment
+% session. 
+
     TS = table2struct(T);
     
     % Rename specific fields of headervars that are repeated or have dots

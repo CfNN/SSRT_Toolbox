@@ -1,5 +1,5 @@
 function VisualizeSessions(filenames)
-% VISUALIZESESSION - Generates various plots for exploratory data analysis,
+% VISUALIZESESSIONS - Generates various plots for exploratory data analysis,
 % based on data from one or more experiment sessions. Note that you are 
 % responsible for ordering the filenames as you want them displayed in the 
 % plots, and ensuring that each file represents a whole, single session.  
@@ -7,7 +7,7 @@ function VisualizeSessions(filenames)
 % filenames: A cell array of the names of files in session_files to be used
 % to generate the plots
 %
-% Example usage: VisualizeSession( {'subj1_sess1_SSRT.mat','subj1_sess2_SSRT.mat'} );
+% Example usage: VisualizeSessions( {'subj1_sess1_SSRT.mat','subj1_sess2_SSRT.mat'} );
 
 trialsCell = cell(1, length(filenames));
 goTrialsPerFile = zeros(1, length(filenames));

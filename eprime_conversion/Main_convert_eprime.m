@@ -1,3 +1,7 @@
+% Converts all .txt files in eprime_conversion/eprime_input, which are from 
+% experiment sessions run using E-Prime, to .mat session files. The .mat
+% session files are deposited in eprime_conversion/session_files_output. 
+
 clear;
 
 % Set the current MATLAB folder to the folder where this script is stored

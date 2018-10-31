@@ -1,5 +1,5 @@
 function subjectSSRTs_final = CalcSSRT_Congdon2012(AverageLast, OutlierCriteria, TrialInclusion, go_CorrectAnswer, go_Answer, go_GoRT, go_Correct, stop_SSD_actual, stop_Correct, stop_TrialComplete, go_TrialCounts, stop_TrialCounts)
-% SUBJECTSSRTS_FINAL: Calculates SSRT values for each subject in a merged 
+% CALCSSRT_CONGDON2012: Calculates SSRT values for each subject in a merged 
 % dataset, based on methods described in 'Measurement and Reliability of 
 % Response Inhibition' by Congdon et al. (2012) in Frontiers in Psychology.
 % The first three parameters of this function correspond to the 12

@@ -1,6 +1,9 @@
 classdef UserInterface < handle
-% USERINTERFACE - Wrapper class that contains PsychToolbox functions. Main
-% script 'Main_SSRT.m' works primarily by using functions in this class.
+% USERINTERFACE - Wrapper class that contains PsychToolbox functions for
+% displaying graphics and playing sounds. This includes code for running
+% trials, showing fixation and blank screens, and showing
+% instructions/'ready' screens during the experiment session. The 
+% superscript 'Main_SSRT.m' works primarily by calling functions in this class.
     
     properties (GetAccess=private)
         % Settings (initialized once by main script, never change during

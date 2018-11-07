@@ -179,7 +179,7 @@ classdef UserInterface < handle
         
         [onsetTimestamp, offsetTimestamp] = ShowFixation(obj, duration, runningVals);
         
-        trials = ShowBlank(obj, duration, runningVals, trials);
+        [onsetTimestamp, offsetTimestamp] = ShowBlank(obj, duration, runningVals);
         
         [trials, runningVals, quitKeyPressed] = RunNextTrial(obj, trials, settings, runningVals);
         

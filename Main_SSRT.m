@@ -97,7 +97,7 @@ while (runningVals.currentTrial <= length(trials))
     runningVals = UpdateLivePerfMetrics(runningVals);
     
     % Show a blank screen
-    trials = ui.ShowBlank(settings.BlankDur, runningVals, trials);
+    [trials(runningVals.currentTrial).BlankOnsetTimestamp, trials(runningVals.currentTrial).BlankOffsetTimestamp] = ui.ShowBlank(settings.BlankDur, runningVals);
     
     % Autosave data in case the experiment is interrupted partway through
     save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness');

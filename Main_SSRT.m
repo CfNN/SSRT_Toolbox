@@ -1,3 +1,4 @@
+% Author: Morgan Talbot, morgan_talbot@alumni.brown.edu
 % To run an experiment session, enter "Main_SSRT" into the MATLAB console, 
 % or press the "Run" betton in the menu above under the "EDITOR" tab. 
 

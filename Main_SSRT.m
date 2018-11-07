@@ -27,6 +27,8 @@ end
 % struct variable called 'settings'. Settings variables should NEVER change
 % during the experiment session. 
 ExperimentSettings;
+% Clean up the settings variables (removing any unused variables)
+ExperimentSettingsCleanup;
 
 % Set up running values that change during the experiment session (live 
 % performance metrics, two changing stop-signal delays associated with the 

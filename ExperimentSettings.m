@@ -33,7 +33,7 @@ settings.FixationDur = 0.5; % seconds
 
 % Duration to display fixation cross before and after running the trials
 % (e.g. to collect 'resting' MRI data)
-settings.SessionStartFixationDur = 10; % seconds
+settings.SessionStartFixationDur = 4; % seconds
 settings.SessionEndFixationDur = 4; % seconds
 
 % The stop signal delay (SSD) changes +/- between trials by this amount of

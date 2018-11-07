@@ -173,7 +173,7 @@ classdef UserInterface < handle
         
         [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj);
         
-        trials = ShowFixation(obj, duration, runningVals, trials);
+        [onsetTimestamp, offsetTimestamp] = ShowFixation(obj, duration, runningVals);
         
         trials = ShowBlank(obj, duration, runningVals, trials);
         

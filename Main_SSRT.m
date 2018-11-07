@@ -60,7 +60,7 @@ ui.ShowInstructions();
 
 % Use the ui to show a fixation cross for the specified amount of time in
 % seconds
-ui.ShowFixation(0.5, runningVals);
+[sessionStartFixationOnsetTimestamp, sessionStartFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionStartFixationDur, runningVals);
 
 % Loop through the trials structure (note - runningVals.currentTrial keeps
 % track of which trial you are on)
@@ -76,7 +76,7 @@ while (runningVals.currentTrial <= length(trials))
     
     % Show fixation cross (constant or variable duration set above
     % according to ExperimentSettings.m
-    trials = ui.ShowFixation(fixationDur, runningVals, trials);
+    [trials(runningVals.currentTrial).FixationOnsetTimestamp, trials(runningVals.currentTrial).FixationOffsetTimestamp] = ui.ShowFixation(fixationDur, runningVals); %#ok<SAGROW>  (suppress warning)
     
     % Run the go or stop trial (depending on what is in this row of the
     % trial struct)
@@ -104,6 +104,10 @@ while (runningVals.currentTrial <= length(trials))
     % Advance iterator to next trial
     runningVals.currentTrial = runningVals.currentTrial + 1;
 end
+
+% Use the ui to show a fixation cross for the specified amount of time in
+% seconds
+[sessionEndFixationOnsetTimestamp, sessionEndFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionEndFixationDur, runningVals);
 
 % Clear the screen and unneeded variables.
 sca;

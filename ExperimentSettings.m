@@ -31,6 +31,11 @@ settings.FixDurMax = 3.9; % seconds
 % NOT APPLICABLE if settings.VariableFixationDur is set to true
 settings.FixationDur = 0.5; % seconds
 
+% Duration to display fixation cross before and after running the trials
+% (e.g. to collect 'resting' MRI data)
+settings.SessionStartFixationDur = 10; % seconds
+settings.SessionEndFixationDur = 4; % seconds
+
 % The stop signal delay (SSD) changes +/- between trials by this amount of
 % time (staircase procedure)
 settings.delta_t_initial = 0.050; % seconds

@@ -50,9 +50,11 @@ classdef UserInterface < handle
             % Call some default settings for setting up Psychtoolbox
             PsychDefaultSetup(2);
             
-            % Skip sync checks, may cause timing errors ~30 microseconds on
-            % Mac operating systems
-            Screen('Preference', 'SkipSyncTests', 1);
+            % Skip sync checks if running on Mac. Running on a Mac may 
+            % cause stimulus timing errors of up to a few milliseconds.
+            if contains(upper(computer), 'MAC')
+                Screen('Preference', 'SkipSyncTests', 1);
+            end
             
             %---KEYBOARD SETUP---%
             

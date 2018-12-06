@@ -30,8 +30,8 @@ stop_SSD_actual(2, 2, 1:4) = 0.400;
 stop_SSD_actual(2, 2, 5:8) = 0.500;
 
 subjectSSRTs_final = QuantileMethodSSRT(go_GoRT, go_Correct, stop_SSD_actual, stop_Correct, stop_TrialComplete);
-assert(abs(subjectSSRTs_final(1)-0.100) < 1e-10, 'Incorrect SSRT value calculated for pt1');
-assert(abs(subjectSSRTs_final(2)-1.450) < 1e-10, 'Incorrect SSRT value calculated for pt1');
+assert(abs(subjectSSRTs_final(1)-0.100) < 1e-10, 'Incorrect SSRT value calculated for pt1 - CalcSSRT2_autotest FAILED');
+assert(abs(subjectSSRTs_final(2)-1.450) < 1e-10, 'Incorrect SSRT value calculated for pt1 - CalcSSRT2_autotest FAILED');
 
 disp('[Passed] CalcSSRT2_autotest: correct SSRTs on a small artificial dataset of varying GoRT and ssd values (no NaNs)');
 

@@ -23,10 +23,10 @@ for goRT = 0.50:0.10:0.200
 
         subjectSSRTs_final = QuantileMethodSSRT(go_GoRT_sparse, go_Correct_sparse, stop_SSD_actual_sparse, stop_Correct_sparse, stop_TrialComplete_sparse);
         % Expect participants 1 and 3 to have the same values
-        assert(subjectSSRTs_final(1) == subjectSSRTs_final(3), 'Participants with same values did not return the same SSRT result (QuantileMethodSSRT.m)');
+        assert(subjectSSRTs_final(1) == subjectSSRTs_final(3), 'Participants with same values did not return the same SSRT result (QuantileMethodSSRT.m) - CalcSSRT_autotest FAILED');
         % participant 2 SSRT should be NaN
-        assert(isnan(subjectSSRTs_final(2)), 'A non-NaN SSRT value was returned for a participant with all of their data set to NaN');
-        assert(subjectSSRTs_final(1) == goRT - ssd, 'Incorrect SSRT value calculated');
+        assert(isnan(subjectSSRTs_final(2)), 'A non-NaN SSRT value was returned for a participant with all of their data set to NaN - CalcSSRT_autotest FAILED');
+        assert(subjectSSRTs_final(1) == goRT - ssd, 'Incorrect SSRT value calculated - CalcSSRT_autotest FAILED');
         
     end
 

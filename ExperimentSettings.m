@@ -9,12 +9,12 @@ settings.ExperimentName = 'SSRT';
 % Set whether the stop signal is 'auditory' (beep) or 'visual' (up arrow)
 settings.StopSignalType = 'visual';
 
-% Set whether an MRI trigger will be used to start the experiment
+% Set whether an MRI trigger will be used to start the experiment session
 % (otherwise a key press will be used)
 settings.UseMRITrigger = false;
 
 % Set to "true" to display live performance metrics at the bottom of the 
-% "Blank" screen during the experiment. To hide metrics, set to "false"
+% screen during the experiment session. To hide metrics, set to "false"
 settings.DisplayPerfMetrics = false;
 
 % Set to "true" to use a variable fixation cross duration, chosen for each
@@ -32,7 +32,7 @@ settings.FixDurMax = 3.9; % seconds
 settings.FixationDur = 0.5; % seconds
 
 % Duration to display fixation cross before and after running the trials
-% (e.g. to collect 'resting' MRI data)
+% (e.g. to collect 'resting' data and avoid truncating HRF in MRI studies)
 settings.SessionStartFixationDur = 4; % seconds
 settings.SessionEndFixationDur = 4; % seconds
 

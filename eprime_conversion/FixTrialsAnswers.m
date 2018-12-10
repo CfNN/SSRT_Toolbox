@@ -4,10 +4,10 @@ function FixTrialsAnswers(filename)
 % Main_convert_eprime.m), in case some answers that were recorded were
 % non-standard (eg. "LEFT_ARROW" instead of numbers 0, 1, 2 etc). It is 
 % your responsibility to convert any non-standard responses in the .mat
-% file in advance - otherwise, this script will simply set them to NaNs.
-% The overall result is to make the Answers field a regular array of
-% numbers only rather than the equivalent of a cell array with 
-% heterogeneous data types.  
+% file to '1', '2', or '0' in advance - otherwise, this script will simply 
+% set any values other than these to NaNs. The overall result is to make 
+% the Answers field a regular array of numbers only rather than the 
+% equivalent of a cell array with heterogeneous data types.  
 %
 % This script also sets the "Correct" field if the modified "Answer" 
 % matches the "CorrectAnswer" for a given trial. 
@@ -28,6 +28,8 @@ for t = 1:numel(trials)
 end
 
 save([directory '/' filename], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'sessionStartDateTime', 'triggerTimestamp');
+
+disp(['Formatting of "Answer" field from file "' filename '" has been fixed!']);
 
 end
 

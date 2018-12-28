@@ -5,7 +5,7 @@ function [trials, runningVals, quitKeyPressed] = RunNextTrial(obj, trials, setti
 % function also takes care of all timestamping and data logging within each
 % trial. 
 %
-% Usage: [trials, runningVals] = RunNextTrial(trials, runningVals);
+% Usage: [trials, runningVals] = RunNextTrial(trials, settings, runningVals);
 % -------------------
 
 % If the escape or q key is pressed, this will be set to true and passed as 

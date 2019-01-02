@@ -1,7 +1,8 @@
 function [trials, settings, subjectNumber, sessionNumber, sessionStartDateTime, triggerTimestamp] = convert_eprime(T, headervars)
 % CONVERT_EPRIME - generates session file variables from a Table variable 
-% produced using eprimetxt2vars.m on a text file from an E-Prime experiment
-% session. 
+% produced using ePrimeTxt2vars.m on a text file from an E-Prime experiment
+% session. The ePrimeTxt2vars function was provided by GitHub user yuval-harpaz
+% (https://github.com/yuval-harpaz)
 
     TS = table2struct(T);
     

@@ -1,5 +1,5 @@
 function [T,headervars]=eprimetxt2vars(ifile,xlsxFile)
-% ***Function and documentation provided by Github user yuval-harpaz***
+% ***Function and documentation provided by Github user yuval-harpaz, https://github.com/yuval-harpaz***
 % turns nasty e-prime txt files into matlab tables, and if requested, to xlsx
 % ifile is input txt file, output of E-Prime
 % xlsxFile is output file name (optional).

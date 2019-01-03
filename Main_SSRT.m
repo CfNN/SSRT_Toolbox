@@ -7,6 +7,10 @@ close all;
 clear;
 sca;
 
+% Shuffle random number generator (necessary to avoid getting the same
+% "random" numbers each time
+rng('shuffle');
+
 % Set the current MATLAB folder to the folder where this script is stored
 disp('Setting the current MATLAB folder to the location of this script');
 cd(fileparts(which(mfilename)));

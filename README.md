@@ -1,10 +1,10 @@
-# OVERVIEW
+# Overview
 
 UNDER CONSTRUCTION: A toolbox for running and analyzing data from customizable stop signal task experiments
 
 --------------------------------------
 
-# DOCUMENTATION
+# Documentation
 
 SSRT Toolbox Guidebook.docx - a comprehensive guide on how to use the code in this repository, including lots of details on how the code works, automated software tests for quality assurance, etc: 
 https://drive.google.com/open?id=1tWJwX3Ze17iPwAtx2mj4rzWblLyqfSFb
@@ -17,7 +17,7 @@ https://drive.google.com/open?id=1SImsxUceBTHfauJIyCvCgVu-haLawdsE
 
 --------------------------------------
 
-# LEGACY E-PRIME SSRT CODE/DOCUMENTATION
+# Legacy E-Prime SSRT code/documentation
 
 Although running the task in MATLAB instead of E-Prime is highly recommended, an updated E-Prime version of the task is also provided here:
 https://drive.google.com/open?id=1dUmTZn6icjHFZXSyRvaYh8z_eQ0XrjTZ

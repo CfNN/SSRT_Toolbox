@@ -20,7 +20,7 @@ https://drive.google.com/open?id=1SImsxUceBTHfauJIyCvCgVu-haLawdsE
 # Legacy E-Prime SSRT code/documentation
 
 Although running the task in MATLAB instead of E-Prime is highly recommended, an updated E-Prime version of the task is also provided here:
-https://drive.google.com/open?id=1dUmTZn6icjHFZXSyRvaYh8z_eQ0XrjTZ
+https://drive.google.com/open?id=1z2K9d-gmruxyetAMe7DY9GI5tsQwlani
 
 The SSRT Toolbox provides MATLAB scripts to convert the E-Prime .txt data files into MATLAB format so that they can be analyzed by the same suite of provided data analysis scripts. Please see SSRT Toolbox Guidebook.docx (link above) and E-Prime SSRT Guidebook.docx (link below) for details. 
 

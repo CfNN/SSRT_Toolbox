@@ -43,13 +43,7 @@ try
     % performance metrics, two changing stop-signal delays associated with the 
     % two staircases) 
     InitRunningVals;
-
-    % If the user is running the code on a Mac, warn them about stimulus timing
-    % errors
-    if contains(upper(computer), 'MAC')
-        waitfor(msgbox('WARNING: Because you are running on a Mac, SSRT Toolbox must allow PsychToolbox to skip screen synchronization checks that test whether stimuli are being presented at precisely the right time. This may result in slight stimulus timing errors (possibly up to a few milliseconds) - Windows and Linux provide more precision. The big red exclamation mark you will see when PsychToolbox starts is warning you of this same issue. Please see the SSRT Guidebook for more information.'));
-    end
-
+    
     % Use dialog boxes to get subject number, session number, etc. from the experimenter
     [subjectNumber, sessionNumber, subjectHandedness, runningVals, cancelled] = GetSessionConfig(settings, runningVals);
     if (cancelled)

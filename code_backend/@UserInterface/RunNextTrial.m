@@ -21,7 +21,7 @@ else
 end
 
 Screen('DrawTexture', obj.window, go_img, [], obj.lr_arrow_rect, 0);
-obj.DrawPerformanceMetrics(runningVals);
+obj.DrawPerformanceMetrics(settings, runningVals);
 [~, tGoStimOn, ~, ~, ~]  = Screen('Flip',obj.window); % GetSecs called internally for timestamp
 trials(runningVals.currentTrial).GoSignalOnsetTimestamp = tGoStimOn;
 
@@ -61,7 +61,7 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
         end
         
         % Time out after TrialDur if no key is pressed
-        if ((keyTime - tGoStimOn) > obj.settings.TrialDur)
+        if ((keyTime - tGoStimOn) > settings.TrialDur)
             trials(runningVals.currentTrial).Answer = 0;
             timedout = true;
         end
@@ -121,7 +121,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
                 stopSignalStartTime = PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
             elseif strcmpi(settings.StopSignalType, 'visual')
                 % Redraw performance metrics, draw up arrow stop signal
-                obj.DrawPerformanceMetrics(runningVals);
+                obj.DrawPerformanceMetrics(settings, runningVals);
                 Screen('DrawTexture', obj.window, obj.arrow_tex_up, [], obj.up_arrow_rect, 0);
                 [~, stopSignalStartTime, ~, ~, ~]  = Screen('Flip',obj.window);
             else
@@ -135,12 +135,12 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         
         % Stop the stop signal if it has been presented long enough
         if stopSignalOn
-            if (keyTime - stopSignalStartTime) > obj.settings.StopSignalDur
+            if (keyTime - stopSignalStartTime) > settings.StopSignalDur
                 
                 if strcmpi(settings.StopSignalType, 'auditory')
                     [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
                 elseif strcmpi(settings.StopSignalType, 'visual')
-                    obj.DrawPerformanceMetrics(runningVals);
+                    obj.DrawPerformanceMetrics(settings, runningVals);
                     [~, stopSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window);
                 end
                 trials(runningVals.currentTrial).StopSignalOffsetTimestamp = stopSignalEndTime;
@@ -149,7 +149,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         end
         
         % Time out after TrialDur if no key presses
-        if (keyTime - tGoStimOn) > obj.settings.TrialDur
+        if (keyTime - tGoStimOn) > settings.TrialDur
             trials(runningVals.currentTrial).Answer = 0;
             timedout = true;
         end

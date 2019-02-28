@@ -1,4 +1,4 @@
-function [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj)
+function [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj, settings)
 % SHOWREADYTRIGGER - Shows a 'ready' screen. The experiment can be
 % continued with a key press or an MRI trigger. A timer is included, which
 % allows the experimenter to check whether the MRI is starting up within a 
@@ -13,7 +13,7 @@ function [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj)
 %
 % See also SHOWINSTRUCTIONS
 
-if obj.settings.UseMRITrigger
+if settings.UseMRITrigger
     % The trigger device is a keyboard. Loop through keyboards until you find
     %  one with a vendor ID that matches the trigger device. For MRI trigger 
     %  use 'Current Designs, Inc.'

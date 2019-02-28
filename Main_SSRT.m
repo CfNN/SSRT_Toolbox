@@ -71,11 +71,11 @@ try
     % triggerTimestamp, there is be a (tiny) time difference between when
     % the two are recorded! For this reason, always use triggerTimestamp for 
     % important calculations if possible. 
-    [triggerTimestamp, sessionStartDateTime] = ui.ShowReadyTrigger();
+    [triggerTimestamp, sessionStartDateTime] = ui.ShowReadyTrigger(settings);
 
     % Use the ui to show a fixation cross for the specified amount of time in
     % seconds
-    [sessionStartFixationOnsetTimestamp, sessionStartFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionStartFixationDur, runningVals);
+    [sessionStartFixationOnsetTimestamp, sessionStartFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionStartFixationDur, settings, runningVals);
 
     % Loop through the trials structure (note - runningVals.currentTrial keeps
     % track of which trial you are on)
@@ -91,7 +91,7 @@ try
 
         % Show fixation cross (constant or variable duration set above
         % according to ExperimentSettings.m
-        [trials(runningVals.currentTrial).FixationOnsetTimestamp, trials(runningVals.currentTrial).FixationOffsetTimestamp] = ui.ShowFixation(fixationDur, runningVals);
+        [trials(runningVals.currentTrial).FixationOnsetTimestamp, trials(runningVals.currentTrial).FixationOffsetTimestamp] = ui.ShowFixation(fixationDur, settings, runningVals); %#ok<SAGROW>
 
         % Run the go or stop trial (depending on what is in this row of the
         % trial struct)
@@ -108,7 +108,7 @@ try
         runningVals = UpdateLivePerfMetrics(runningVals);
 
         % Show a blank screen
-        [trials(runningVals.currentTrial).BlankOnsetTimestamp, trials(runningVals.currentTrial).BlankOffsetTimestamp] = ui.ShowBlank(settings.BlankDur, runningVals);
+        [trials(runningVals.currentTrial).BlankOnsetTimestamp, trials(runningVals.currentTrial).BlankOffsetTimestamp] = ui.ShowBlank(settings.BlankDur, settings, runningVals);
 
         % Autosave data in case the experiment is interrupted partway through
         save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness', 'triggerTimestamp', 'sessionStartDateTime', 'sessionStartFixationOnsetTimestamp', 'sessionStartFixationOffsetTimestamp');
@@ -119,7 +119,7 @@ try
 
     % Use the ui to show a fixation cross for the specified amount of time in
     % seconds
-    [sessionEndFixationOnsetTimestamp, sessionEndFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionEndFixationDur, runningVals);
+    [sessionEndFixationOnsetTimestamp, sessionEndFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionEndFixationDur, settings, runningVals);
 
     cleanup();
 

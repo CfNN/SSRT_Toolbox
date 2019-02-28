@@ -1,4 +1,4 @@
-function DrawPerformanceMetrics(obj, runningVals)
+function DrawPerformanceMetrics(obj, settings, runningVals)
 % Draws performance metrics at the bottom of the the screen, without 
 % flipping the screen yet (flipping must be done AFTER calling this 
 % function). 
@@ -8,7 +8,7 @@ function DrawPerformanceMetrics(obj, runningVals)
 % 
 % Usage: DrawPerformanceMetrics(runningVals);
 
-if obj.settings.DisplayPerfMetrics == true
+if settings.DisplayPerfMetrics == true
     
     perfMetrics = [
         'Go Acc: ' num2str(runningVals.GoAcc) '%    Last go trial RT: ' num2str(round(runningVals.LastGoRT*1000)) 'ms' '\n\n',...

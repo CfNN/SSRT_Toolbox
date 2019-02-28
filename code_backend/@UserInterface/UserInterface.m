@@ -6,9 +6,6 @@ classdef UserInterface < handle
 % superscript 'Main_SSRT.m' works primarily by calling functions in this class.
     
     properties (GetAccess=private)
-        % Settings (initialized once by main script, never change during
-        % experiment)
-        settings;
         
         % Screen properties
         window;
@@ -24,7 +21,6 @@ classdef UserInterface < handle
         arrow_tex_up;
         lr_arrow_rect;
         up_arrow_rect;
-        
         
         % Sound parameters
         snd_stopBeep;
@@ -43,9 +39,7 @@ classdef UserInterface < handle
     end
     
     methods
-        function obj = UserInterface(settings_init)
-            
-            obj.settings = settings_init;
+        function obj = UserInterface(settings)
             
             % Call some default settings for setting up Psychtoolbox
             PsychDefaultSetup(2);
@@ -133,17 +127,17 @@ classdef UserInterface < handle
             PsychPortAudio('Volume', obj.snd_pahandle, volume);
 
             % Make a beep which we will play back to the user
-            obj.snd_stopBeep = MakeBeep(obj.settings.BeepFreq, obj.settings.StopSignalDur, snd_playbackFreq);
+            obj.snd_stopBeep = MakeBeep(settings.BeepFreq, settings.StopSignalDur, snd_playbackFreq);
             
             % Fill the audio playback buffer with the audio data, doubled for stereo
             % presentation
             PsychPortAudio('FillBuffer', obj.snd_pahandle, [obj.snd_stopBeep; obj.snd_stopBeep]);
             
-            if strcmpi(obj.settings.StopSignalType, 'auditory')
+            if strcmpi(settings.StopSignalType, 'auditory')
                 % Play an initial beep to get the sound card started
                 % (otherwise, you get high latency on the first stop trial)
                 PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
-                pause(obj.settings.StopSignalDur + 0.010)
+                pause(settings.StopSignalDur + 0.010)
                 PsychPortAudio('Stop', obj.snd_pahandle)
             end
             
@@ -164,7 +158,7 @@ classdef UserInterface < handle
             % ratio the image will appear warped / stretched
             arrow_aspectRatio = arrow_s2 / arrow_s1;
             
-            lr_arrow_height = 0.01*obj.settings.ArrowSize*obj.screenXpixels;
+            lr_arrow_height = 0.01*settings.ArrowSize*obj.screenXpixels;
             
             lr_arrow_width = lr_arrow_height * arrow_aspectRatio;
             
@@ -177,17 +171,17 @@ classdef UserInterface < handle
         
         ShowInstructions(obj);
         
-        [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj);
+        [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj, settings);
         
-        [onsetTimestamp, offsetTimestamp] = ShowFixation(obj, duration, runningVals);
+        [onsetTimestamp, offsetTimestamp] = ShowFixation(obj, duration, settings, runningVals);
         
-        [onsetTimestamp, offsetTimestamp] = ShowBlank(obj, duration, runningVals);
+        [onsetTimestamp, offsetTimestamp] = ShowBlank(obj, duration, settings, runningVals);
         
         [trials, runningVals, quitKeyPressed] = RunNextTrial(obj, trials, settings, runningVals);
         
     end
     
     methods (Access = private)
-        DrawPerformanceMetrics(obj, runningVals);
+        DrawPerformanceMetrics(obj, settings, runningVals);
     end
 end

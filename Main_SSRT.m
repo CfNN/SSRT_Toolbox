@@ -56,7 +56,11 @@ try
     ui = UserInterface(settings);
 
     % Use the ui to show experiment instructions
-    ui.ShowInstructions();
+    quitKeyPressed = ui.ShowInstructions(settings);
+    if quitKeyPressed
+        cleanup();
+        return  % End session
+    end
 
     % Use the ui to show the "ready" screen with a timer, and wait for the MRI
     % trigger (or a key press, depending on what is specified in
@@ -65,12 +69,20 @@ try
     % triggerTimestamp, there is be a (tiny) time difference between when
     % the two are recorded! For this reason, always use triggerTimestamp for 
     % important calculations if possible. 
-    [triggerTimestamp, sessionStartDateTime] = ui.ShowReadyTrigger(settings);
+    [triggerTimestamp, sessionStartDateTime, quitKeyPressed] = ui.ShowReadyTrigger(settings);
+    if quitKeyPressed
+        cleanup();
+        return  % End session
+    end
 
     % Use the ui to show a fixation cross for the specified amount of time in
     % seconds
-    [sessionStartFixationOnsetTimestamp, sessionStartFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionStartFixationDur, settings, runningVals);
-
+    [sessionStartFixationOnsetTimestamp, sessionStartFixationOffsetTimestamp, quitKeyPressed] = ui.ShowFixation(settings.SessionStartFixationDur, settings, runningVals);
+    if quitKeyPressed
+        cleanup();
+        return  % End session
+    end
+    
     % Loop through the trials structure (note - runningVals.currentTrial keeps
     % track of which trial you are on)
     while (runningVals.currentTrial <= length(trials))
@@ -85,16 +97,18 @@ try
 
         % Show fixation cross (constant or variable duration set above
         % according to ExperimentSettings.m
-        [trials(runningVals.currentTrial).FixationOnsetTimestamp, trials(runningVals.currentTrial).FixationOffsetTimestamp] = ui.ShowFixation(fixationDur, settings, runningVals); %#ok<SAGROW>
-
+        [trials(runningVals.currentTrial).FixationOnsetTimestamp, trials(runningVals.currentTrial).FixationOffsetTimestamp, quitKeyPressed] = ui.ShowFixation(fixationDur, settings, runningVals); %#ok<SAGROW>
+        if quitKeyPressed
+            cleanup();
+            return  % End session
+        end
+        
         % Run the go or stop trial (depending on what is in this row of the
         % trial struct)
         [trials, runningVals, quitKeyPressed] = ui.RunNextTrial(trials, settings, runningVals);
-
         if quitKeyPressed
             cleanup();
-            % Stop this script from running to end experiment session
-            return
+            return  % End session
         end
 
         % Update the live performance metrics that are optionally displayed on
@@ -102,7 +116,11 @@ try
         runningVals = UpdateLivePerfMetrics(runningVals);
 
         % Show a blank screen
-        [trials(runningVals.currentTrial).BlankOnsetTimestamp, trials(runningVals.currentTrial).BlankOffsetTimestamp] = ui.ShowBlank(settings.BlankDur, settings, runningVals);
+        [trials(runningVals.currentTrial).BlankOnsetTimestamp, trials(runningVals.currentTrial).BlankOffsetTimestamp, quitKeyPressed] = ui.ShowBlank(settings.BlankDur, settings, runningVals);
+        if quitKeyPressed
+            cleanup();
+            return  % End session
+        end
 
         % Autosave data in case the experiment is interrupted partway through
         save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '_AUTOSAVE.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness', 'triggerTimestamp', 'sessionStartDateTime', 'sessionStartFixationOnsetTimestamp', 'sessionStartFixationOffsetTimestamp');
@@ -113,8 +131,12 @@ try
 
     % Use the ui to show a fixation cross for the specified amount of time in
     % seconds
-    [sessionEndFixationOnsetTimestamp, sessionEndFixationOffsetTimestamp] = ui.ShowFixation(settings.SessionEndFixationDur, settings, runningVals);
-
+    [sessionEndFixationOnsetTimestamp, sessionEndFixationOffsetTimestamp, quitKeyPressed] = ui.ShowFixation(settings.SessionEndFixationDur, settings, runningVals);
+    if quitKeyPressed
+        cleanup();
+        return  % End session
+    end
+    
     cleanup();
 
     % Save the data to a .mat, delete autosaved version

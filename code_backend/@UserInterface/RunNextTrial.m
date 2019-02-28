@@ -26,12 +26,17 @@ obj.DrawPerformanceMetrics(settings, runningVals);
 trials(runningVals.currentTrial).GoSignalOnsetTimestamp = tGoStimOn;
 
 % Specify allowable key names, restrict input to these
-activeKeys = [KbName('LeftArrow') KbName('RightArrow') KbName('Escape') KbName('q')];
+activeKeys = [settings.RespondLeftKeyCodes, settings.RespondRightKeyCodes, settings.QuitKeyCodes];
 RestrictKeysForKbCheck(activeKeys);
 
 keyMap = containers.Map;
-keyMap('LeftArrow') = 1;
-keyMap('RightArrow') = 2;
+for k = 1:numel(settings.RespondLeftKeyNames)
+    keyMap(settings.RespondLeftKeyNames{k}) = 1;
+end
+for k = 1:numel(settings.RespondRightKeyNames)
+    keyMap(settings.RespondRightKeyNames{k}) = 2;
+end
+clear k;
 
 if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
     
@@ -39,25 +44,25 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
     
     timedout = false;
     while ~timedout
-
-        % Check for keyboard presses while also getting a timestamp
-        % (timestamp is recorded in keyTime regardless of whether a key was
-        % pressed)
-        [ keyIsDown, keyTime, keyCode ] = KbCheck; % keyTime is from an internal call to GetSecs
+        
+        % Check for quit key
+        [ keyIsDown, ~, keyCode ] = KbCheck(settings.ControlDeviceIndex);
+        if keyIsDown && ismember(find(keyCode), settings.QuitKeyCodes)
+            quitKeyPressed = true;
+            return
+        end
+        
+        % Check for keyboard responses and get a timestamp (timestamp is
+        % recorded in keyTime regardless of whether a key was pressed)
+        [ keyIsDown, keyTime, keyCode ] = KbCheck(settings.RespondDeviceIndex); % keyTime is from an internal call to GetSecs
         
         % Record RT and keycode data, and break loop, if key pressed
         if (keyIsDown)
-            
-            if strcmpi(KbName(keyCode), 'q') || strcmpi(KbName(keyCode), 'escape')
-                quitKeyPressed = true;
-                return;
-            end
-            
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
             trials(runningVals.currentTrial).GoRT = keyTime - tGoStimOn;
             runningVals.LastGoRT = keyTime - tGoStimOn; % For live performance metrics
             trials(runningVals.currentTrial).Answer = keyMap(KbName(keyCode));
-            break;
+            break
         end
         
         % Time out after TrialDur if no key is pressed
@@ -98,20 +103,21 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
     timedout = false;
     while ~timedout
         
-        % Check for keyboard presses while also getting a timestamp
-        % (timestamp is recorded in keyTime regardless of whether a key was
-        % pressed)
-        [ keyIsDown, keyTime, keyCode ] = KbCheck; % keyTime is from an internal call to GetSecs
+        % Check for quit key
+        [ keyIsDown, ~, keyCode ] = KbCheck(settings.ControlDeviceIndex);
+        if keyIsDown && ismember(find(keyCode), settings.QuitKeyCodes)
+            quitKeyPressed = true;
+            return
+        end
+
+        % Check for keyboard responses and get a timestamp (timestamp is
+        % recorded in keyTime regardless of whether a key was pressed)
+        [ keyIsDown, keyTime, keyCode ] = KbCheck(settings.RespondDeviceIndex); % keyTime is from an internal call to GetSecs
         
-        if keyIsDown
-            
-            if strcmpi(KbName(keyCode), 'q') || strcmpi(KbName(keyCode), 'escape')
-                quitKeyPressed = true;
-                return;
-            end
-            
+        % Record RT and keycode data, and break loop, if key pressed
+        if (keyIsDown)
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
-            break;
+            break
         end
         
         % Start the stop signal if the stop-signal delay (SSD) has elapsed

@@ -1,14 +1,39 @@
-function ShowInstructions(obj)
+function quitKeyPressed = ShowInstructions(obj, settings)
 % SHOWINSTRUCTIONS - Show a series of introductory/instruction screens
 %   Usage: ShowInstructions();
 % See also SHOWREADYTRIGGER
 % -------------------
+
+
+quitKeyPressed = false; % Default value
 
 % User can proceed by hitting any key. 
 % Change to (eg.) activeKeys = [KbName('space'), KbName('return')] to only 
 % respond to the space or enter keys. 
 activeKeys = [];
 RestrictKeysForKbCheck(activeKeys);
+
+% FIRST SCREEN (title)
+Screen('TextSize', obj.window, 80);
+Screen('TextFont', obj.window, 'Courier New');
+Screen('TextSTyle', obj.window, 1); % 1 makes it bold;
+
+DrawFormattedText(obj.window, 'SSRT', 'center', 'center', obj.c_yellow);
+
+Screen('Flip', obj.window); % Flip to the screen
+
+% Wait for key press
+[~, keyCode, ~] = KbStrokeWait(settings.ControlDeviceIndex);
+
+% quit if quit key was pressed
+if ismember(find(keyCode), settings.QuitKeyCodes)
+    quitKeyPressed = true;
+    return
+end
+
+% SECOND SCREEN (instructions)
+Screen('TextSize', obj.window, 24);
+Screen('TextSTyle', obj.window, 0);
 
 instructions = [ % Use \n to start a new line. Just one \n doesn't give enough space - best to use two or three
     'Now we''re ready to start!\n\n\n',...
@@ -21,21 +46,17 @@ instructions = [ % Use \n to start a new line. Just one \n doesn't give enough s
     'Please press the spacebar when you are ready to start.'
     ];
 
-Screen('TextSize', obj.window, 80);
-Screen('TextFont', obj.window, 'Courier New');
-Screen('TextSTyle', obj.window, 1); % 1 makes it bold;
-
-DrawFormattedText(obj.window, 'SSRT', 'center', 'center', obj.c_yellow);
-
-Screen('Flip', obj.window); % Flip to the screen
-KbStrokeWait; % Wait for key press
-
-Screen('TextSize', obj.window, 24);
-Screen('TextSTyle', obj.window, 0);
-
 DrawFormattedText(obj.window, instructions, 'center', 'center', obj.c_yellow);
 
 Screen('Flip', obj.window); % Flip to the screen
-KbStrokeWait; % Wait for key press
+
+% Wait for key press
+[~, keyCode, ~] = KbStrokeWait(settings.ControlDeviceIndex);
+
+% quit if quit key was pressed
+if ismember(find(keyCode), settings.QuitKeyCodes)
+        quitKeyPressed = true;
+        return
+end
 
 end

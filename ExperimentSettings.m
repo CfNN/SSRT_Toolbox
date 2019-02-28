@@ -12,6 +12,37 @@ settings.StopSignalType = 'visual';
 % Set whether an MRI trigger will be used to start the experiment session
 % (otherwise a key press will be used)
 settings.UseMRITrigger = false;
+settings.MRITriggerManufacturer = 'Current Designs, Inc.';
+settings.MRITriggerUsageName = 'Keyboard';
+
+% Index of the keyboard/other device that the participant will use to make
+% their responses. To see keyboard device indices, type GetKeyboardIndices()
+% into the MATLAB command window and use the resulting value. For other
+% device indices, type devices = PsychHID('devices'), and examine the
+% "index" field in the "devices" struct that is created. To enable any
+% device/keyboard to make a response, leave the field equal to []. 
+settings.RespondDeviceIndex = [];
+
+% Index of the keyboard/other device used to control the flow of the
+% experiment (e.g. pressing "continue" on instructions screens, pressing
+% the quit key to end the session early). Set by the same procedure as
+% settings.RespondDeviceIndex above.
+settings.ControlDeviceIndex = [];
+
+% Determines which keyboard keys are used by the participant for "left" or
+% "right" responses. Entries can be single numbers/letters for number or
+% letter keys. 'RightArrow', 'LeftArrow', 'UpArrow', 'DownArrow' also work.
+% Note that if number keys are used, two entries might be necessary, one
+% including the symbol that is conventionally placed on that same key on
+% the keyboard. E.g. '1' is the numpad 1, '1!' is the number row 1. All
+% "left" responses will be marked as 1, all "right" responses as 2.
+settings.RespondLeftKeyNames = {'LeftArrow', '1', '1!'};
+settings.RespondRightKeyNames  = {'RightArrow', '2', '2@'};
+
+% Enter the names of the key(s) that you want to designate as "quit keys":
+% When you press one of these, the session will immediately end (with data
+% autosaved).
+settings.QuitKeyNames = {'q', 'escape'};
 
 % Set to "true" to display live performance metrics at the bottom of the 
 % screen during the experiment session. To hide metrics, set to "false"

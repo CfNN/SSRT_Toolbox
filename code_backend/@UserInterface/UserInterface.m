@@ -167,13 +167,14 @@ classdef UserInterface < handle
             obj.up_arrow_rect = CenterRectOnPointd(obj.up_arrow_rect, obj.screenXpixels / 2, obj.screenYpixels / 2);
         end
         
-        ShowInstructions(obj);
         
-        [triggerTimestamp, sessionStartDateTime] = ShowReadyTrigger(obj, settings);
+        quitKeyPressed = ShowInstructions(obj, settings);
         
-        [onsetTimestamp, offsetTimestamp] = ShowFixation(obj, duration, settings, runningVals);
+        [triggerTimestamp, sessionStartDateTime, quitKeyPressed] = ShowReadyTrigger(obj, settings);
         
-        [onsetTimestamp, offsetTimestamp] = ShowBlank(obj, duration, settings, runningVals);
+        [onsetTimestamp, offsetTimestamp, quitKeyPressed] = ShowFixation(obj, duration, settings, runningVals);
+        
+        [onsetTimestamp, offsetTimestamp, quitKeyPressed] = ShowBlank(obj, duration, settings, runningVals);
         
         [trials, runningVals, quitKeyPressed] = RunNextTrial(obj, trials, settings, runningVals);
         
@@ -181,5 +182,6 @@ classdef UserInterface < handle
     
     methods (Access = private)
         DrawPerformanceMetrics(obj, settings, runningVals);
+        quitKeyPressed = WaitAndCheckQuit(obj, duration, settings);
     end
 end

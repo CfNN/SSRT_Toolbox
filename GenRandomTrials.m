@@ -53,9 +53,10 @@ for i = 1:n_trials
         trials(i).CorrectAnswer = 2;
     end
     
-    % To be set during/after the trial - initially set to NaN (not a number)
+    % To be set during/after the trial - initially set to "null" defaults
+    trials(i).ResponseKeyName = 'none';
     trials(i).Answer = NaN;
-    trials(i).Correct = false; %Boolean indicating whether Answer matches CorrectAnswer
+    trials(i).Correct = false; % Boolean indicating whether Answer matches CorrectAnswer
     trials(i).GoRT = NaN;
     trials(i).SSD_intended = NaN;
     trials(i).SSD_actual = NaN;

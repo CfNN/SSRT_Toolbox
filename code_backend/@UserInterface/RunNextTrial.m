@@ -57,10 +57,11 @@ if strcmpi(trials(runningVals.currentTrial).Procedure, 'StGTrial')
         [ keyIsDown, keyTime, keyCode ] = KbCheck(settings.RespondDeviceIndex); % keyTime is from an internal call to GetSecs
         
         % Record RT and keycode data, and break loop, if key pressed
-        if (keyIsDown)
+        if (keyIsDown && ~ismember(find(keyCode), settings.QuitKeyCodes))
             trials(runningVals.currentTrial).ResponseTimestamp = keyTime;
             trials(runningVals.currentTrial).GoRT = keyTime - tGoStimOn;
             runningVals.LastGoRT = keyTime - tGoStimOn; % For live performance metrics
+            trials(runningVals.currentTrial).ResponseKeyName = KbName(keyCode);
             trials(runningVals.currentTrial).Answer = keyMap(KbName(keyCode));
             break
         end

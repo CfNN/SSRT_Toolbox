@@ -18,6 +18,8 @@ classdef UserInterface < handle
         % Images
         arrow_tex_left;
         arrow_tex_right;
+        arrow_tex_left_red;
+        arrow_tex_right_red;
         arrow_tex_up;
         lr_arrow_rect;
         up_arrow_rect;
@@ -143,10 +145,14 @@ classdef UserInterface < handle
 
             arrow_img_left = double(imread('media/Left_Arrow.bmp'));
             arrow_img_right = double(imread('media/Right_Arrow.bmp'));
+            arrow_img_left_red = imread('media/Left_Arrow_Red.bmp');
+            arrow_img_right_red = imread('media/Right_Arrow_Red.bmp');
             arrow_img_up = double(imread('media/Up_Arrow.bmp'));
 
             obj.arrow_tex_left = Screen('MakeTexture', obj.window, arrow_img_left);
             obj.arrow_tex_right = Screen('MakeTexture', obj.window, arrow_img_right);
+            obj.arrow_tex_left_red = Screen('MakeTexture', obj.window, arrow_img_left_red);
+            obj.arrow_tex_right_red = Screen('MakeTexture', obj.window, arrow_img_right_red);
             obj.arrow_tex_up = Screen('MakeTexture', obj.window, arrow_img_up);
             
             [arrow_s1, arrow_s2, ~] = size(arrow_img_left); % arrow_img_right is same size, up arrow has aspect ratio reversed

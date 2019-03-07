@@ -58,7 +58,7 @@ try
     % Use the ui to show experiment instructions
     quitKeyPressed = ui.ShowInstructions(settings);
     if quitKeyPressed
-        cleanup();
+        cleanup(settings);
         return  % End session
     end
 
@@ -71,7 +71,7 @@ try
     % important calculations if possible. 
     [triggerTimestamp, sessionStartDateTime, quitKeyPressed] = ui.ShowReadyTrigger(settings);
     if quitKeyPressed
-        cleanup();
+        cleanup(settings);
         return  % End session
     end
 
@@ -79,7 +79,7 @@ try
     % seconds
     [sessionStartFixationOnsetTimestamp, sessionStartFixationOffsetTimestamp, quitKeyPressed] = ui.ShowFixation(settings.SessionStartFixationDur, settings, runningVals);
     if quitKeyPressed
-        cleanup();
+        cleanup(settings);
         return  % End session
     end
     
@@ -99,7 +99,7 @@ try
         % according to ExperimentSettings.m
         [trials(runningVals.currentTrial).FixationOnsetTimestamp, trials(runningVals.currentTrial).FixationOffsetTimestamp, quitKeyPressed] = ui.ShowFixation(fixationDur, settings, runningVals); %#ok<SAGROW>
         if quitKeyPressed
-            cleanup();
+            cleanup(settings);
             return  % End session
         end
         
@@ -107,7 +107,7 @@ try
         % trial struct)
         [trials, runningVals, quitKeyPressed] = ui.RunNextTrial(trials, settings, runningVals);
         if quitKeyPressed
-            cleanup();
+            cleanup(settings);
             return  % End session
         end
 
@@ -118,7 +118,7 @@ try
         % Show a blank screen
         [trials(runningVals.currentTrial).BlankOnsetTimestamp, trials(runningVals.currentTrial).BlankOffsetTimestamp, quitKeyPressed] = ui.ShowBlank(settings.BlankDur, settings, runningVals);
         if quitKeyPressed
-            cleanup();
+            cleanup(settings);
             return  % End session
         end
 
@@ -133,11 +133,11 @@ try
     % seconds
     [sessionEndFixationOnsetTimestamp, sessionEndFixationOffsetTimestamp, quitKeyPressed] = ui.ShowFixation(settings.SessionEndFixationDur, settings, runningVals);
     if quitKeyPressed
-        cleanup();
+        cleanup(settings);
         return  % End session
     end
     
-    cleanup();
+    cleanup(settings);
 
     % Save the data to a .mat, delete autosaved version
     save(['subj' num2str(subjectNumber) '_sess' num2str(sessionNumber) '_' settings.ExperimentName '.mat'], 'trials', 'settings', 'subjectNumber', 'sessionNumber', 'subjectHandedness', 'triggerTimestamp', 'sessionStartDateTime', 'sessionStartFixationOnsetTimestamp', 'sessionStartFixationOffsetTimestamp', 'sessionEndFixationOnsetTimestamp', 'sessionEndFixationOffsetTimestamp');
@@ -155,13 +155,16 @@ try
     clear ssdMsg i;
 
 catch e
-    cleanup();
+    cleanup(settings);
     rethrow(e);
 end
 
-function cleanup()
+function cleanup(settings)
+    % Shut down audio if used
+    if strcmpi(settings.StopSignalType, 'auditory')
+        PsychPortAudio('Close');
+    end
     % Clear the screen and unneeded variables
     sca;
-    PsychPortAudio('Close');
     clear ui filename;
 end

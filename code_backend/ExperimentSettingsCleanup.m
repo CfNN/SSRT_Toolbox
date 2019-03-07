@@ -1,5 +1,9 @@
 % CLEANUP from ExperimentSettings.m (removing redundant and confusing settings variables)
 
+% Needed for the experiment to run on different operating systems with
+% different key code systems
+KbName('UnifyKeyNames');
+
 settings.QuitKeyCodes = zeros(1, numel(settings.QuitKeyNames));
 for n = 1:numel(settings.QuitKeyNames)
     settings.QuitKeyCodes(n) = KbName(settings.QuitKeyNames{n});

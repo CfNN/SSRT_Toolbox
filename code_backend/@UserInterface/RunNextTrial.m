@@ -14,8 +14,10 @@ quitKeyPressed = false;
 
 if strcmpi(trials(runningVals.currentTrial).Stimulus, 'Right_Arrow.bmp')
     go_img = obj.arrow_tex_right;
+    red_stop_arrow = obj.arrow_tex_right_red;
 elseif strcmpi(trials(runningVals.currentTrial).Stimulus, 'Left_Arrow.bmp')
     go_img = obj.arrow_tex_left;
+    red_stop_arrow = obj.arrow_tex_left_red;
 else
     error('Invalid arrow direction - use ''Right_Arrow.bmp'' or ''Left_Arrow.bmp''');
 end
@@ -126,13 +128,17 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
             
             if strcmpi(settings.StopSignalType, 'auditory')
                 stopSignalStartTime = PsychPortAudio('Start', obj.snd_pahandle, obj.snd_repetitions, obj.snd_startCue, obj.snd_waitForDeviceStart);
-            elseif strcmpi(settings.StopSignalType, 'visual')
+            elseif strcmpi(settings.StopSignalType, 'visual_uparrow')
                 % Redraw performance metrics, draw up arrow stop signal
                 obj.DrawPerformanceMetrics(settings, runningVals);
                 Screen('DrawTexture', obj.window, obj.arrow_tex_up, [], obj.up_arrow_rect, 0);
                 [~, stopSignalStartTime, ~, ~, ~]  = Screen('Flip',obj.window);
+            elseif strcmpi(settings.StopSignalType, 'visual_turnred')
+                obj.DrawPerformanceMetrics(settings, runningVals);
+                Screen('DrawTexture', obj.window, red_stop_arrow, [], obj.lr_arrow_rect, 0);
+                [~, stopSignalStartTime, ~, ~, ~]  = Screen('Flip',obj.window);
             else
-                error('Please set settings.StopSignalType to ''visual'' or ''auditory'' in ExperimentSettings.m');
+                error('Please set settings.StopSignalType to ''auditory'', ''visual_uparrow'', or ''visual_turnred'' in ExperimentSettings.m');
             end
             trials(runningVals.currentTrial).StopSignalOnsetTimestamp = stopSignalStartTime;
             trials(runningVals.currentTrial).SSD_actual = trials(runningVals.currentTrial).StopSignalOnsetTimestamp - trials(runningVals.currentTrial).GoSignalOnsetTimestamp;
@@ -146,7 +152,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
                 
                 if strcmpi(settings.StopSignalType, 'auditory')
                     [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
-                elseif strcmpi(settings.StopSignalType, 'visual')
+                elseif strcmpi(settings.StopSignalType, 'visual_upparow') || strcmpi(settings.StopSignalType, 'visual_turnred')
                     obj.DrawPerformanceMetrics(settings, runningVals);
                     [~, stopSignalEndTime, ~, ~, ~]  = Screen('Flip',obj.window);
                 end
@@ -170,7 +176,7 @@ elseif strcmpi(trials(runningVals.currentTrial).Procedure, 'StITrial') || strcmp
         if strcmpi(settings.StopSignalType, 'auditory')
             [~, ~, ~, stopSignalEndTime] = PsychPortAudio('Stop', obj.snd_pahandle);
             trials(runningVals.currentTrial).StopSignalOffsetTimestamp = stopSignalEndTime;
-        elseif strcmpi(settings.StopSignalType, 'visual')
+        elseif strcmpi(settings.StopSignalType, 'visual_upparow') || strcmpi(settings.StopSignalType, 'visual_turnred')
             trials(runningVals.currentTrial).StopSignalOffsetTimestamp = goSignalEndTime; % Screen('Flip'...) removes both stop and go visual stimuli at same time
         end
     end

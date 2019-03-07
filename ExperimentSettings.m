@@ -6,8 +6,11 @@
 % data files:
 settings.ExperimentName = 'SSRT';
 
-% Set whether the stop signal is 'auditory' (beep) or 'visual' (up arrow)
-settings.StopSignalType = 'visual';
+% Choose the type of stop signal you want to use from the following:
+% (a) 'auditory' (beep), 
+% (b) 'visual_uparrow' (up arrow replaces left/right arrow)
+% (c) 'visual_turnred' (left/right arrow turns red)
+settings.StopSignalType = 'visual_turnred';
 
 % Set whether an MRI trigger will be used to start the experiment session
 % (otherwise a key press will be used)

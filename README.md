@@ -1,6 +1,6 @@
 # Overview
 
-UNDER CONSTRUCTION: A toolbox for running and analyzing data from customizable stop signal task experiments
+A toolbox for running and analyzing data from customizable stop signal task experiments with or without MRI
 
 --------------------------------------
 

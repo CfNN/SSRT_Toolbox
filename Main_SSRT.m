@@ -9,7 +9,13 @@ try
     % Clear the workspace and the screen, close all plot windows
     close all;
     clear;
-    sca;
+    
+    try
+        sca;
+    catch e
+        disp("It looks like PsychToolbox is not installed correctly!")
+        rethrow(e)
+    end
 
     % Shuffle random number generator (necessary to avoid getting the same
     % "random" numbers each time
